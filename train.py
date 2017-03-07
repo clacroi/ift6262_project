@@ -11,14 +11,14 @@ from keras.layers.normalization import BatchNormalization
 import theano.tensor as T
 from keras import backend as K
 
-projectAddress = "../"
+projectAddress = "~/project"
 
 # load images filenames into list, load and plot the first image
 print("Loading data...")
 train_imgs_fn = listdir(projectAddress + '/Data/inpainting/train2014/')
 val_imgs_fn = listdir(projectAddress + '/Data/inpainting/val2014/')
 img=mpimg.imread(projectAddress + '/Data/inpainting/train2014/' + train_imgs_fn[0])
-imgplot = plt.imshow(img)
+#imgplot = plt.imshow(img)
 
 # Load 10% of train, val images into Python list
 # Train images
