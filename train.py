@@ -34,8 +34,8 @@ val_images = []
 for fn in val_imgs_fn:
     im = mpimg.imread(projectAddress + '/Data/inpainting/val2014/' + fn)
     if len(im.shape) == 3:
-        val_images.append(im.transpose(2, 0, 1))/255.0
-x_val = np.array(val_images)
+        val_images.append(im.transpose(2, 0, 1))
+x_val = np.array(val_images)/255.0
 
 # Convolutional Auto-Encoder v0.1
 print("Constructing Keras model...")
