@@ -11,7 +11,7 @@ from keras.layers.normalization import BatchNormalization
 import theano.tensor as T
 from keras import backend as K
 
-projectAddress = "~/project"
+projectAddress = "/home/ubuntu/project"
 
 # load images filenames into list, load and plot the first image
 print("Loading data...")
