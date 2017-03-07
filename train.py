@@ -23,7 +23,7 @@ img=mpimg.imread(projectAddress + '/Data/inpainting/train2014/' + train_imgs_fn[
 # Load 10% of train, val images into Python list
 # Train images
 train_images = []
-for fn in train_imgs_fn:
+for fn in train_imgs_fn[0:500]:
     im = mpimg.imread(projectAddress + '/Data/inpainting/train2014/' + fn)
     if len(im.shape) == 3:
         train_images.append(im.transpose(2, 0, 1))
@@ -31,7 +31,7 @@ x_train = np.array(train_images)/255.0
 
 # Validation images
 val_images = []
-for fn in val_imgs_fn:
+for fn in val_imgs_fn[0:500]:
     im = mpimg.imread(projectAddress + '/Data/inpainting/val2014/' + fn)
     if len(im.shape) == 3:
         val_images.append(im.transpose(2, 0, 1))
@@ -61,8 +61,9 @@ autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
 
 # Fit model
 print("Fitting model...")
-autoencoder.fit(x_train, x_train,
+autoencoder.fit(x_train[0:10], x_train[0:10],
                 nb_epoch=50,
-                batch_size=128,
+                batch_size=2,
                 shuffle=True,
-                validation_data=(x_val, x_val))
+		verbose=1,
+                validation_data=(x_val[0:10], x_val[0:10]))
