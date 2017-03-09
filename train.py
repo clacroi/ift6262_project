@@ -20,16 +20,16 @@ NB_EPOCH = 10
 NB_SAMPLES_PER_EPOCH = 10
 FIT_STYLE = "classic"
 
-def load_and_transform_data(path, nb_imgs=0):
+def load_and_transform_data(path, nb_imgs=None):
 
-    filenames_list = listdir(path)
-    if nb_imgs == 0:
+    filenames_list = [path + img for img in listdir(path)]
+    if nb_imgs == None:
         nb_imgs == len(filenames_list)
 
     images_list = []
     for i in range(0, nb_imgs - 1):
         fn = filenames_list[i]
-        im = mpimg.imread(path + fn)
+        im = mpimg.imread(fn)
 
         if len(im.shape) == 3:
             images_list.append(im.transpose(2, 0, 1))
@@ -42,12 +42,12 @@ def load_and_transform_data(path, nb_imgs=0):
 
 def evaluate_model(model, fit_style, batch_size, nb_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
-                   samples_generator=None, samples_per_epoch=None):
+                   samples_generator=None, samples_per_epoch=None, train_fn_list=None, val_fn_list=None):
 
     train_history = History()
 
     if fit_style == "gen":
-        model.fit_generator(samples_generator(),
+        model.fit_generator(samples_generator(train_fn_list, samples_per_epoch, batch_size),
                             samples_per_epoch=samples_per_epoch,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
@@ -69,15 +69,18 @@ if __name__ == "__main__":
 
     print("Loading data...")
     # Training Data
-    train_fn, x_train = load_and_transform_data(train_path, 10)
-
+    train_fn, x_train = load_and_transform_data(train_path, 20)
     # Validation Data
-    val_fn, x_val = load_and_transform_data(val_path, 10)
+    val_fn, x_val = load_and_transform_data(val_path, 20)
 
     # Convolutional Auto-Encoder v0.1
+    print("Compiling model...")
     autoencoder = model_v01()
-    evaluate_model(autoencoder, "classic", 3, 10,
-                   x_train=x_train[0:9,:,:,:], y_train=x_train[:,:,16:48,16:48],
-                   x_val=x_val[0:9,:,:,:], y_val=x_val[:,:,16:48,16:48])
+
+    print("Fitting model...")
+    evaluate_model(autoencoder, "gen", 3, 10,
+                   x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
+                   x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
+                   samples_generator=generate_samples_v01, samples_per_epoch=10, train_fn_list=train_fn, val_fn_list=val_fn)
 
 
