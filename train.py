@@ -3,6 +3,7 @@ from os import listdir
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import pickle
+import h5py
 
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Merge, Permute
@@ -15,12 +16,12 @@ from keras import backend as K
 
 from models_v0 import *
 
-PROJ_PATH = "/home/ubuntu/project"
-BATCH_SIZE = 200
-NB_EPOCH = 100
-NB_SAMPLES_PER_EPOCH = 82000
-NB_VAL_SAMPLES = 40000
-FIT_STYLE = "classic"
+PROJ_PATH = '/home/corentin/Documents/Polytechnique/Deep Learning/Projet'
+BATCH_SIZE = 2
+NB_EPOCH = 10
+NB_SAMPLES_PER_EPOCH = 10
+NB_VAL_SAMPLES = 10
+FIT_STYLE = "gen"
 
 
 def get_images_filenames(path):
@@ -66,6 +67,8 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch,
                   verbose=1,
                   callbacks=[train_history])
 
+    return train_history
+
 
 train_path = PROJ_PATH + '/Data/inpainting/train2014/'
 val_path = PROJ_PATH + '/Data/inpainting/val2014/'
@@ -82,11 +85,12 @@ x_train = load_and_transform_data(train_path, train_fn, 20)
 with open("./Data/val_images_fn.pkl", 'rb') as input:
     val_fn = pickle.load(input)
 
-x_val = load_and_transform_data(train_path, train_fn, NB_VAL_SAMPLES)
+x_val = load_and_transform_data(val_path, val_fn, NB_VAL_SAMPLES)
 #val_fn = get_images_filenames(val_path)
 
 
 # Convolutional Auto-Encoder v0.1
+model_name = "convautoencoder_v01"
 print("Compiling model...")
 autoencoder = model_v01()
 
@@ -94,9 +98,14 @@ print("Fitting model...")
 train_fn = [train_path + fn for fn in train_fn]
 val_fn = [val_path + fn for fn in val_fn]
 
-evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH,
+autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH,
                x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
                x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
                samples_generator=generate_samples_v01,
                samples_per_epoch=NB_SAMPLES_PER_EPOCH,
                train_fn_list=train_fn, val_fn_list=val_fn)
+
+autoencoder.save_weights('./Results/' + model_name + '.h5')
+print(autoencoder_train.history)
+with open('./Results/' + model_name + '_trainHistory.pkl', 'wb') as output:
+    pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
