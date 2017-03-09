@@ -6,64 +6,78 @@ import matplotlib.image as mpimg
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Merge, Permute
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
+from keras.callbacks import History
 from keras.layers.normalization import BatchNormalization
 
 import theano.tensor as T
 from keras import backend as K
 
-projectAddress = "/home/ubuntu/project"
+from models_v0 import *
 
-# load images filenames into list, load and plot the first image
-print("Loading data...")
-train_imgs_fn = listdir(projectAddress + '/Data/inpainting/train2014/')
-val_imgs_fn = listdir(projectAddress + '/Data/inpainting/val2014/')
-img=mpimg.imread(projectAddress + '/Data/inpainting/train2014/' + train_imgs_fn[0])
-#imgplot = plt.imshow(img)
+PROJ_PATH = "/home/corentin/Documents/Polytechnique/Deep Learning/Projet"
+BATCH_SIZE = 3
+NB_EPOCH = 10
+NB_SAMPLES_PER_EPOCH = 10
+FIT_STYLE = "classic"
 
-# Load 10% of train, val images into Python list
-# Train images
-train_images = []
-for fn in train_imgs_fn[0:500]:
-    im = mpimg.imread(projectAddress + '/Data/inpainting/train2014/' + fn)
-    if len(im.shape) == 3:
-        train_images.append(im.transpose(2, 0, 1))
-x_train = np.array(train_images)/255.0
+def load_and_transform_data(path, nb_imgs=0):
 
-# Validation images
-val_images = []
-for fn in val_imgs_fn[0:500]:
-    im = mpimg.imread(projectAddress + '/Data/inpainting/val2014/' + fn)
-    if len(im.shape) == 3:
-        val_images.append(im.transpose(2, 0, 1))
-x_val = np.array(val_images)/255.0
+    filenames_list = listdir(path)
+    if nb_imgs == 0:
+        nb_imgs == len(filenames_list)
 
-# Convolutional Auto-Encoder v0.1
-print("Constructing Keras model...")
-autoencoder = models.Sequential()
-# Encoder
-autoencoder.add(Layer(input_shape=(3, 64, 64)))
-autoencoder.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
-autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
-autoencoder.add(Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
-autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
-autoencoder.add(Convolution2D(16, 3, 3, activation='relu', border_mode='same', dim_ordering='th'))
-autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
-# Decoder
-autoencoder.add(Convolution2D(16, 3, 3, activation='relu', border_mode='same', dim_ordering='th'))
-autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
-autoencoder.add(Convolution2D(16, 3, 3, activation='relu', border_mode='same', dim_ordering='th'))
-autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
-autoencoder.add(Convolution2D(32, 3, 3, activation='relu', border_mode='same', dim_ordering='th'))
-autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
-autoencoder.add(Convolution2D(3, 3, 3, activation='sigmoid', border_mode='same', dim_ordering='th'))
+    images_list = []
+    for i in range(0, nb_imgs - 1):
+        fn = filenames_list[i]
+        im = mpimg.imread(path + fn)
 
-autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+        if len(im.shape) == 3:
+            images_list.append(im.transpose(2, 0, 1))
+        else:
+            del filenames_list[i]
 
-# Fit model
-print("Fitting model...")
-autoencoder.fit(x_train[0:10], x_train[0:10],
-                nb_epoch=50,
-                batch_size=2,
-                shuffle=True,
-		verbose=1,
-                validation_data=(x_val[0:10], x_val[0:10]))
+    x = np.array(images_list) / 255.0
+
+    return (filenames_list, x)
+
+def evaluate_model(model, fit_style, batch_size, nb_epoch,
+                   x_train=None, x_val=None, y_train=None, y_val=None,
+                   samples_generator=None, samples_per_epoch=None):
+
+    train_history = History()
+
+    if fit_style == "gen":
+        model.fit_generator(samples_generator(),
+                            samples_per_epoch=samples_per_epoch,
+                            nb_epoch=nb_epoch,
+                            validation_data=(x_val, y_val),
+                            verbose=1,
+                            callbacks=[train_history])
+    else:
+        model.fit(x_train, y_train,
+                  nb_epoch=nb_epoch,
+                  batch_size=batch_size,
+                  shuffle=True,
+                  validation_data=(x_val, y_val),
+                  verbose=1,
+                  callbacks=[train_history])
+
+if __name__ == "__main__":
+
+    train_path = PROJ_PATH + '/Data/inpainting/train2014/'
+    val_path = PROJ_PATH + '/Data/inpainting/val2014/'
+
+    print("Loading data...")
+    # Training Data
+    train_fn, x_train = load_and_transform_data(train_path, 10)
+
+    # Validation Data
+    val_fn, x_val = load_and_transform_data(val_path, 10)
+
+    # Convolutional Auto-Encoder v0.1
+    autoencoder = model_v01()
+    evaluate_model(autoencoder, "classic", 3, 10,
+                   x_train=x_train[0:9,:,:,:], y_train=x_train[:,:,16:48,16:48],
+                   x_val=x_val[0:9,:,:,:], y_val=x_val[:,:,16:48,16:48])
+
+
