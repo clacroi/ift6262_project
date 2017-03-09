@@ -2,6 +2,7 @@ import numpy as np
 from os import listdir
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import pickle
 
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Merge, Permute
@@ -16,8 +17,8 @@ from models_v0 import *
 
 PROJ_PATH = "/home/corentin/Documents/Polytechnique/Deep Learning/Projet"
 BATCH_SIZE = 100
-NB_EPOCH = 1000
-NB_SAMPLES_PER_EPOCH = 10
+NB_EPOCH = 100
+NB_SAMPLES_PER_EPOCH = 1000
 FIT_STYLE = "classic"
 
 
@@ -34,25 +35,13 @@ def get_images_filenames(path):
     return filenames_list
 
 
-def load_and_transform_data(path, nb_imgs=None):
+def load_and_transform_data(path, filenames, nb_images=None):
+    if nb_images == None:
+        nb_images == len(filenames)
 
-    filenames_list = [path + img for img in listdir(path)]
-    if nb_imgs == None:
-        nb_imgs == len(filenames_list)
+    images_list = [mpimg.imread(path + fn).transpose(2, 0, 1) for fn in filenames[0:nb_images]]
 
-    images_list = []
-    for i in range(0, nb_imgs - 1):
-        fn = filenames_list[i]
-        im = mpimg.imread(fn)
-
-        if len(im.shape) == 3:
-            images_list.append(im.transpose(2, 0, 1))
-        else:
-            del filenames_list[i]
-
-    x = np.array(images_list) / 255.0
-
-    return (filenames_list, x)
+    return np.array(images_list) / 255.0
 
 def evaluate_model(model, fit_style, batch_size, nb_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
@@ -81,11 +70,18 @@ train_path = PROJ_PATH + '/Data/inpainting/train2014/'
 val_path = PROJ_PATH + '/Data/inpainting/val2014/'
 
 print("Loading data...")
+
 # Training Data
-train_fn, x_train = load_and_transform_data(train_path, 20)
-train_fn = get_images_filenames(train_path)
+with open("./Data/train_images_fn.pkl", 'rb') as input:
+    train_fn = pickle.load(input)
+
+x_train = load_and_transform_data(train_path, train_fn, 20)
+
 # Validation Data
-val_fn, x_val = load_and_transform_data(val_path, 100)
+with open("./Data/val_images_fn.pkl", 'rb') as input:
+    val_fn = pickle.load(input)
+
+x_val = load_and_transform_data(train_path, train_fn, 20)
 #val_fn = get_images_filenames(val_path)
 
 
@@ -94,11 +90,12 @@ print("Compiling model...")
 autoencoder = model_v01()
 
 print("Fitting model...")
+train_fn = [train_path + fn for fn in train_fn]
+val_fn = [val_path + fn for fn in val_fn]
+
 evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH,
                x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
                x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
                samples_generator=generate_samples_v01,
                samples_per_epoch=NB_SAMPLES_PER_EPOCH,
                train_fn_list=train_fn, val_fn_list=val_fn)
-
-
