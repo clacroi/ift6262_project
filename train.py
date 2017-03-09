@@ -15,10 +15,24 @@ from keras import backend as K
 from models_v0 import *
 
 PROJ_PATH = "/home/corentin/Documents/Polytechnique/Deep Learning/Projet"
-BATCH_SIZE = 3
-NB_EPOCH = 10
+BATCH_SIZE = 100
+NB_EPOCH = 1000
 NB_SAMPLES_PER_EPOCH = 10
 FIT_STYLE = "classic"
+
+
+def get_images_filenames(path):
+
+    filenames_list = [path + img for img in listdir(path)]
+    for i in range(0, len(filenames_list)):
+        fn = filenames_list[i]
+        im = mpimg.imread(fn)
+
+        if len(im.shape) != 3:
+            del filenames_list[i]
+
+    return filenames_list
+
 
 def load_and_transform_data(path, nb_imgs=None):
 
@@ -69,17 +83,22 @@ val_path = PROJ_PATH + '/Data/inpainting/val2014/'
 print("Loading data...")
 # Training Data
 train_fn, x_train = load_and_transform_data(train_path, 20)
+train_fn = get_images_filenames(train_path)
 # Validation Data
-val_fn, x_val = load_and_transform_data(val_path, 20)
+val_fn, x_val = load_and_transform_data(val_path, 100)
+#val_fn = get_images_filenames(val_path)
+
 
 # Convolutional Auto-Encoder v0.1
 print("Compiling model...")
 autoencoder = model_v01()
 
 print("Fitting model...")
-evaluate_model(autoencoder, "gen", 3, 10,
-                   x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
-                   x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
-                   samples_generator=generate_samples_v01, samples_per_epoch=10, train_fn_list=train_fn, val_fn_list=val_fn)
+evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH,
+               x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
+               x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
+               samples_generator=generate_samples_v01,
+               samples_per_epoch=NB_SAMPLES_PER_EPOCH,
+               train_fn_list=train_fn, val_fn_list=val_fn)
 
 

@@ -51,6 +51,7 @@ def generate_samples_v01(fn_list, samples_per_epoch, batch_size):
             batch_images = []
             for fn in fn_list[i:i + batch_size]:
                 im = mpimg.imread(fn)
+                print("im.shape")
                 batch_images.append(im.transpose(2, 0, 1))
 
             batch_X = np.array(batch_images) / 255.0
