@@ -62,23 +62,22 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch,
                   verbose=1,
                   callbacks=[train_history])
 
-if __name__ == "__main__":
 
-    train_path = PROJ_PATH + '/Data/inpainting/train2014/'
-    val_path = PROJ_PATH + '/Data/inpainting/val2014/'
+train_path = PROJ_PATH + '/Data/inpainting/train2014/'
+val_path = PROJ_PATH + '/Data/inpainting/val2014/'
 
-    print("Loading data...")
-    # Training Data
-    train_fn, x_train = load_and_transform_data(train_path, 20)
-    # Validation Data
-    val_fn, x_val = load_and_transform_data(val_path, 20)
+print("Loading data...")
+# Training Data
+train_fn, x_train = load_and_transform_data(train_path, 20)
+# Validation Data
+val_fn, x_val = load_and_transform_data(val_path, 20)
 
-    # Convolutional Auto-Encoder v0.1
-    print("Compiling model...")
-    autoencoder = model_v01()
+# Convolutional Auto-Encoder v0.1
+print("Compiling model...")
+autoencoder = model_v01()
 
-    print("Fitting model...")
-    evaluate_model(autoencoder, "gen", 3, 10,
+print("Fitting model...")
+evaluate_model(autoencoder, "gen", 3, 10,
                    x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
                    x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
                    samples_generator=generate_samples_v01, samples_per_epoch=10, train_fn_list=train_fn, val_fn_list=val_fn)
