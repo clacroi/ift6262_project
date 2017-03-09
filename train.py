@@ -15,10 +15,11 @@ from keras import backend as K
 
 from models_v0 import *
 
-PROJ_PATH = "/home/corentin/Documents/Polytechnique/Deep Learning/Projet"
-BATCH_SIZE = 100
+PROJ_PATH = "/home/ubuntu/project"
+BATCH_SIZE = 200
 NB_EPOCH = 100
-NB_SAMPLES_PER_EPOCH = 1000
+NB_SAMPLES_PER_EPOCH = 82000
+NB_VAL_SAMPLES = 40000
 FIT_STYLE = "classic"
 
 
@@ -39,7 +40,7 @@ def load_and_transform_data(path, filenames, nb_images=None):
     if nb_images == None:
         nb_images == len(filenames)
 
-    images_list = [mpimg.imread(path + fn).transpose(2, 0, 1) for fn in filenames[0:nb_images]]
+    images_list = [mpimg.imread(path + fn).transpose(2, 0, 1) for fn in filenames[0:nb_images-1]]
 
     return np.array(images_list) / 255.0
 
@@ -81,7 +82,7 @@ x_train = load_and_transform_data(train_path, train_fn, 20)
 with open("./Data/val_images_fn.pkl", 'rb') as input:
     val_fn = pickle.load(input)
 
-x_val = load_and_transform_data(train_path, train_fn, 20)
+x_val = load_and_transform_data(train_path, train_fn, NB_VAL_SAMPLES)
 #val_fn = get_images_filenames(val_path)
 
 
