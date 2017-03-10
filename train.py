@@ -16,11 +16,11 @@ from keras import backend as K
 
 from models_v0 import *
 
-PROJ_PATH = '/home/corentin/Documents/Polytechnique/Deep Learning/Projet'
-BATCH_SIZE = 2
-NB_EPOCH = 10
-NB_SAMPLES_PER_EPOCH = 10
-NB_VAL_SAMPLES = 10
+PROJ_PATH = '/home/ubuntu/project'
+BATCH_SIZE = 200
+NB_EPOCH = 100
+NB_SAMPLES_PER_EPOCH = 82611
+NB_VAL_SAMPLES = 40438
 FIT_STYLE = "gen"
 
 
