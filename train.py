@@ -74,9 +74,6 @@ with open("./Data/train_images_fn.pkl", 'rb') as input:
 # Load python dict containing channel-wise means and stds
 with open("./Data/train_meanStd_dict.pkl", 'rb') as input:
     train_meanStd_dict = pickle.load(input, encoding='latin1')
-print(train_meanStd_dict.keys())
-#print(train_meanStd_dict.values())
-print(train_meanStd_dict[train_fn[0]])
 
 # Validation Data
 

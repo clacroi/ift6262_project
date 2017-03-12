@@ -85,7 +85,7 @@ def model_v02():
         Convolution2D(3, 3, 3, activation='sigmoid', border_mode='same', input_shape=(16, 32, 32), dim_ordering='th'))
     # Output : (3, 32, 32)
 
-    autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
+    autoencoder.compile(optimizer='adadelta', loss='mse')
 
     return autoencoder
 
