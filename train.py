@@ -1,20 +1,13 @@
 import numpy as np
 from os import listdir
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import pickle
-import h5py
-
 import keras.models as models
-from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Merge, Permute
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.callbacks import History
-from keras.layers.normalization import BatchNormalization
-
 import theano.tensor as T
 from keras import backend as K
 
 from models_v0 import *
+from preproc import *
 
 PROJ_PATH = '/home/ubuntu/project'
 BATCH_SIZE = 200
@@ -22,19 +15,6 @@ NB_EPOCH = 100
 NB_SAMPLES_PER_EPOCH = 82611
 NB_VAL_SAMPLES = 40438
 FIT_STYLE = "gen"
-
-
-def get_images_filenames(path):
-
-    filenames_list = [path + img for img in listdir(path)]
-    for i in range(0, len(filenames_list)):
-        fn = filenames_list[i]
-        im = mpimg.imread(fn)
-
-        if len(im.shape) != 3:
-            del filenames_list[i]
-
-    return filenames_list
 
 
 def load_and_transform_data(path, filenames, nb_images=None):
@@ -45,14 +25,24 @@ def load_and_transform_data(path, filenames, nb_images=None):
 
     return np.array(images_list) / 255.0
 
-def evaluate_model(model, fit_style, batch_size, nb_epoch,
+
+def load_data(path, filenames, nb_images=None):
+    if nb_images == None:
+        nb_images == len(filenames)
+
+    images_list = [mpimg.imread(path + fn).transpose(2, 0, 1) for fn in filenames[0:nb_images]]
+
+    return np.array(images_list)
+
+
+def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
-                   samples_generator=None, samples_per_epoch=None, train_fn_list=None, val_fn_list=None):
+                   samples_generator=None, generator_args=None):
 
     train_history = History()
 
     if fit_style == "gen":
-        model.fit_generator(samples_generator(train_fn_list, samples_per_epoch, batch_size),
+        model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
                             samples_per_epoch=samples_per_epoch,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
@@ -76,34 +66,45 @@ val_path = PROJ_PATH + '/Data/inpainting/val2014/'
 print("Loading data...")
 
 # Training Data
+
+# Load valid validation images filenames
 with open("./Data/train_images_fn.pkl", 'rb') as input:
     train_fn = pickle.load(input)
 
-x_train = load_and_transform_data(train_path, train_fn, 20)
+# Load python dict containing channel-wise means and stds
+with open("./Data/train_meanStd_dict.pkl", 'rb') as input:
+    train_meanStd_dict = pickle.load(input, encoding='latin1')
+print(train_meanStd_dict.keys())
+#print(train_meanStd_dict.values())
+print(train_meanStd_dict[train_fn[0]])
 
 # Validation Data
+
+# Load valid validation images filenames
 with open("./Data/val_images_fn.pkl", 'rb') as input:
     val_fn = pickle.load(input)
 
-x_val = load_and_transform_data(val_path, val_fn, NB_VAL_SAMPLES)
-#val_fn = get_images_filenames(val_path)
+# Load python dict containing channel-wise means and stds
+with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
+    val_meanStd_dict = pickle.load(input, encoding='latin1')
 
+x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES) # load validation images
+x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
+y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
+x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
 # Convolutional Auto-Encoder v0.1
-model_name = "convautoencoder_v01"
+model_name = "convautoencoder_v02"
 print("Compiling model...")
-autoencoder = model_v01()
+autoencoder = model_v02()
+autoencoder.summary()
 
 print("Fitting model...")
-train_fn = [train_path + fn for fn in train_fn]
-val_fn = [val_path + fn for fn in val_fn]
 
-autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH,
-               x_train=x_train[:,:,:,:], y_train=x_train[:,:,16:48,16:48],
-               x_val=x_val[:,:,:,:], y_val=x_val[:,:,16:48,16:48],
-               samples_generator=generate_samples_v01,
-               samples_per_epoch=NB_SAMPLES_PER_EPOCH,
-               train_fn_list=train_fn, val_fn_list=val_fn)
+generator_args = {'path':train_path, 'fn_list':train_fn, 'meanStd_dict':train_meanStd_dict}
+autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
+               x_val=x_val, y_val=y_val,
+               samples_generator=generate_samples_v02, generator_args=generator_args)
 
 autoencoder.save_weights('./Results/' + model_name + '.h5')
 print(autoencoder_train.history)
