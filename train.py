@@ -9,11 +9,11 @@ from keras import backend as K
 from models_v0 import *
 from preproc import *
 
-PROJ_PATH = '/home/ubuntu/project'
-BATCH_SIZE = 200
-NB_EPOCH = 100
-NB_SAMPLES_PER_EPOCH = 82610
-NB_VAL_SAMPLES = 40438
+PROJ_PATH = '/home/corentin/Documents/Polytechnique/Deep Learning/Projet'
+BATCH_SIZE = 2
+NB_EPOCH = 10
+NB_SAMPLES_PER_EPOCH = 10
+NB_VAL_SAMPLES = 10
 FIT_STYLE = "gen"
 
 
@@ -91,9 +91,9 @@ y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
 x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
 # Convolutional Auto-Encoder v0.1
-model_name = "convautoencoder_v02"
+model_name = "convautoencoder_v03"
 print("Compiling model...")
-autoencoder = model_v02()
+autoencoder = model_v03()
 autoencoder.summary()
 
 print("Fitting model...")
@@ -105,5 +105,5 @@ autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_
 
 autoencoder.save_weights('./Results/' + model_name + '.h5')
 print(autoencoder_train.history)
-with open('./Results/' + model_name + '_trainHistory.pkl', 'wb') as output:
+with open('./Results/Models_v0' + model_name + '_trainHistory.pkl', 'wb') as output:
     pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
