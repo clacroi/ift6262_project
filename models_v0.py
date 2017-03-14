@@ -223,7 +223,7 @@ def model_v04():
         Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
     autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='mse')

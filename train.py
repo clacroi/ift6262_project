@@ -94,7 +94,7 @@ x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 # Convolutional Auto-Encoder v0.1
 model_name = "convautoencoder_v041"
 print("Compiling model...")
-autoencoder = model_v041()
+autoencoder = model_v04()
 autoencoder.summary()
 
 print("Fitting model...")
