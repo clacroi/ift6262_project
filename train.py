@@ -2,7 +2,7 @@ import numpy as np
 from os import listdir
 import pickle
 import keras.models as models
-from keras.callbacks import History
+from keras.callbacks import History, EarlyStopping
 import theano.tensor as T
 from keras import backend as K
 
@@ -40,6 +40,7 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
                    samples_generator=None, generator_args=None):
 
     train_history = History()
+    early_stopping = EarlyStopping(monitor='val_loss', patience=5)
 
     if fit_style == "gen":
         model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
@@ -47,7 +48,7 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
                             verbose=1,
-                            callbacks=[train_history])
+                            callbacks=[train_history, early_stopping])
     else:
         model.fit(x_train, y_train,
                   nb_epoch=nb_epoch,
@@ -91,9 +92,9 @@ y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
 x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
 # Convolutional Auto-Encoder v0.1
-model_name = "convautoencoder_v04"
+model_name = "convautoencoder_v041"
 print("Compiling model...")
-autoencoder = model_v04()
+autoencoder = model_v041()
 autoencoder.summary()
 
 print("Fitting model...")
