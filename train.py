@@ -1,15 +1,13 @@
-import numpy as np
-from os import listdir
 import pickle
-import keras.models as models
 from keras.callbacks import History, EarlyStopping
 import theano.tensor as T
 from keras import backend as K
 
 from models_v0 import *
+from models_v1 import *
 from preproc import *
 
-PROJ_PATH = '/home/corentin/Documents/Polytechnique/Deep Learning/Projet'
+PROJ_PATH = '/Users/rudy_portugal/Documents/Co Documents/Polytechnique/Deep Learning/Projet'
 BATCH_SIZE = 2
 NB_EPOCH = 10
 NB_SAMPLES_PER_EPOCH = 10
@@ -68,7 +66,7 @@ print("Loading data...")
 
 # Training Data
 
-# Load valid validation images filenames
+# Load valid train images filenames
 with open("./Data/train_images_fn.pkl", 'rb') as input:
     train_fn = pickle.load(input)
 
@@ -87,24 +85,24 @@ with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
     val_meanStd_dict = pickle.load(input, encoding='latin1')
 
 x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES) # load validation images
-x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
+#x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
 x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
+y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
 
-# Convolutional Auto-Encoder v0.1
-model_name = "convautoencoder_v041"
+# Convolutional Auto-Encoder v1.0
+model_name = "convautoencoder_v10"
 print("Compiling model...")
-autoencoder = model_v04()
+autoencoder = model_v10()
 autoencoder.summary()
 
 print("Fitting model...")
 
-generator_args = {'path':train_path, 'fn_list':train_fn, 'meanStd_dict':train_meanStd_dict}
+generator_args = {'path':train_path, 'fn_list':train_fn}
 autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
                x_val=x_val, y_val=y_val,
-               samples_generator=generate_samples_v02, generator_args=generator_args)
+               samples_generator=generate_samples_v10, generator_args=generator_args)
 
-autoencoder.save_weights('./Results/Models_v0/' + model_name + '.h5')
+autoencoder.save_weights('./Results/Models_v1/' + model_name + '.h5')
 print(autoencoder_train.history)
-with open('./Results/Models_v0/' + model_name + '_trainHistory.pkl', 'wb') as output:
+with open('./Results/Models_v1/' + model_name + '_trainHistory.pkl', 'wb') as output:
     pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)

@@ -1,10 +1,9 @@
 import numpy as np
-from os import listdir
-import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 import keras.models as models
-from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Merge, Permute
+from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute
+#from keras.layers import Merge
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.wrappers import TimeDistributed
@@ -263,7 +262,7 @@ def model_v041():
         Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
     autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adam', loss='mse')
