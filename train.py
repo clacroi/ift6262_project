@@ -5,6 +5,7 @@ from keras import backend as K
 
 from models_v0 import *
 from models_v1 import *
+from models_v2 import *
 from preproc import *
 
 PROJ_PATH = '/home/ec2-user/project'
@@ -65,44 +66,41 @@ val_path = PROJ_PATH + '/Data/inpainting/val2014/'
 print("Loading data...")
 
 # Training Data
-
 # Load valid train images filenames
 with open("./Data/train_images_fn.pkl", 'rb') as input:
     train_fn = pickle.load(input)
 
-# Load python dict containing channel-wise means and stds
-with open("./Data/train_meanStd_dict.pkl", 'rb') as input:
-    train_meanStd_dict = pickle.load(input, encoding='latin1')
+with open("./Data/train_embeddings_v20.pkl", 'rb') as input:
+    train_embeddings = pickle.load(input)
 
 # Validation Data
-
 # Load valid validation images filenames
 with open("./Data/val_images_fn.pkl", 'rb') as input:
     val_fn = pickle.load(input)
 
-# Load python dict containing channel-wise means and stds
-with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
-    val_meanStd_dict = pickle.load(input, encoding='latin1')
+with open("./Data/val_embeddings_v20.pkl", 'rb') as input:
+    val_embeddings = pickle.load(input)
 
-x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
-#x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
-x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
+xi_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
+xe_val = np.array([val_embeddings[fn.split(".")[0]] for fn in val_fn]) # load validation captions embeddings
+y_val = xi_val[:, :, 16:48, 16:48].copy() # construct y_val
+xi_val[:, :, 16:48, 16:48] = 0 # fill xi_val central region with 0s
 
-# Convolutional Auto-Encoder v1.0
-model_name = "convautoencoder_v11"
+# Convolutional Auto-Encoder v2.0
+model_name = "convautoencoder_v20"
+
 print("Compiling model...")
-autoencoder = model_v10()
+autoencoder = model_v20()
 autoencoder.summary()
 
 print("Fitting model...")
-
-generator_args = {'path':train_path, 'fn_list':train_fn}
+generator_args = {'path':train_path, 'fn_list':train_fn, 'seq_embeddings':train_embeddings}
 autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
-               x_val=x_val, y_val=y_val,
-               samples_generator=generate_samples_v10, generator_args=generator_args)
+               x_val=[xi_val, xe_val], y_val=y_val,
+               samples_generator=generate_samples_v20, generator_args=generator_args)
 
-autoencoder.save_model('./Results/Models_v1/' + model_name + '.h5')
+print("Saving model")
+autoencoder.save_weights('./Results/Models_v2/' + model_name + '.h5')
 print(autoencoder_train.history)
-with open('./Results/Models_v1/' + model_name + '_trainHistory.pkl', 'wb') as output:
+with open('./Results/Models_v2/' + model_name + '_trainHistory.pkl', 'wb') as output:
     pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
