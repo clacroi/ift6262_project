@@ -62,4 +62,7 @@ def generate_samples_v10(samples_per_epoch, batch_size, path, fn_list):
                 batch_images.append(im.transpose(2, 0, 1))
 
             batch_X = np.array(batch_images) / 255.0
-            yield (batch_X, batch_X[:,:,16:48,16:48])
+            batch_Y = batch_X[:,:,16:48,16:48].copy()
+            batch_X[:,:,16:48,16:48] = 0.0
+
+            yield (batch_X, batch_Y)

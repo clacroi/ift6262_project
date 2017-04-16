@@ -7,11 +7,11 @@ from models_v0 import *
 from models_v1 import *
 from preproc import *
 
-PROJ_PATH = '/Users/rudy_portugal/Documents/Co Documents/Polytechnique/Deep Learning/Projet'
-BATCH_SIZE = 2
-NB_EPOCH = 10
-NB_SAMPLES_PER_EPOCH = 10
-NB_VAL_SAMPLES = 10
+PROJ_PATH = '/home/ec2-user/project'
+BATCH_SIZE = 200
+NB_EPOCH = 50
+NB_SAMPLES_PER_EPOCH = 82610
+NB_VAL_SAMPLES = 40438
 FIT_STYLE = "gen"
 
 
