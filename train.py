@@ -90,7 +90,7 @@ y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
 x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
 # Convolutional Auto-Encoder v1.0
-model_name = "convautoencoder_v10"
+model_name = "convautoencoder_v11"
 print("Compiling model...")
 autoencoder = model_v10()
 autoencoder.summary()
