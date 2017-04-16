@@ -102,7 +102,7 @@ autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_
                x_val=x_val, y_val=y_val,
                samples_generator=generate_samples_v10, generator_args=generator_args)
 
-autoencoder.save_weights('./Results/Models_v1/' + model_name + '.h5')
+autoencoder.save_model('./Results/Models_v1/' + model_name + '.h5')
 print(autoencoder_train.history)
 with open('./Results/Models_v1/' + model_name + '_trainHistory.pkl', 'wb') as output:
     pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
