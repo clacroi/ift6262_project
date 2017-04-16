@@ -1,0 +1,17 @@
+[global]
+
+floatX = float32
+
+device = gpu
+
+[lib]
+
+cnmem = 0.8
+
+[dnn]
+
+enabled = True
+
+[nvcc]
+
+flags = -D_FORCE_INLINES

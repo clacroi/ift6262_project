@@ -84,10 +84,10 @@ with open("./Data/val_images_fn.pkl", 'rb') as input:
 with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
     val_meanStd_dict = pickle.load(input, encoding='latin1')
 
-x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES) # load validation images
+x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
 #x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
+x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
 # Convolutional Auto-Encoder v1.0
 model_name = "convautoencoder_v10"

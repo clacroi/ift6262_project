@@ -1,0 +1,6 @@
+# Transfer cudnn sources
+
+scp -i ./keras_theano_cuda_ami-125b2c72.pem /home/corentin/Documents/Polytechnique/Deep\ Learning/Projet/cudnn-7.5-linux-x64-v5.0-ga.tgz ubuntu@ec2-54-153-51-135.us-west-1.compute.amazonaws.com:/home/ubuntu/
+
+# Transfer project Data
+scp -i ./keras_theano_cuda_ami-125b2c72.pem /home/corentin/Documents/Polytechnique/Deep\ Learning/Projet/Data/inpainting.tar.bz2 ubuntu@ec2-54-153-51-135.us-west-1.compute.amazonaws.com:/home/ubuntu/

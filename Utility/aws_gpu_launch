@@ -1,0 +1,35 @@
+#!/bin/bash
+# Download cuda toolkit, update packages and install cuda-toolkit
+wget https://developer.nvidia.com/compute/cuda/8.0/prod/local_installers/cuda-repo-ubuntu1604-8-0-local_8.0.44-1_amd64-deb
+sudo dpkg -i cuda-repo-ubuntu1604-8-0-local_8.0.44-1_amd64-deb
+sudo apt-get update
+sudo apt-get install -y cuda nvidia-cuda-toolkit
+
+# Download and install cudnn toolkit
+tar -zxvf cudnn-7.5-linux-x64-v5.0-ga.tgz
+echo 'export LD_LIBRARY_PATH=/home/ubuntu/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc 
+echo 'export CPATH=/home/ubuntu/cuda/include:$CPATH' >> ~/.bashrc 
+echo 'export LIBRARY_PATH=/home/ubuntu/cuda/lib64:$LD_LIBRARY_PATH' >> ~/.bashrc 
+
+# Download and install Anaconda
+wget https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
+bash Anaconda3-4.2.0-Linux-x86_64.sh
+source .bashrc
+
+# Install Theano and Keras
+pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
+pip install keras
+
+# Copy Theano and Keras configuration files
+cp ./keras.json ~/.keras/keras.json
+cp ./theanorc ~/.theanorc
+
+# Create Data directory and untar Data
+tar -xf ~/inpainting.tar.bz2
+mkdir ~/project
+mkdir ~/project/Data
+mv ~/inpainting ~/project/Data/
+
+# Install h5py --> no need with Anaconda ?
+#sudo apt-get install libhdf5-dev
+#sudo pip3 install h5py
