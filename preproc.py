@@ -63,7 +63,7 @@ def construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_ar
     for k in range(len(val_fn)):
         val_embeddings_dict[val_fn[k].split(".")[0]] = val_embeddings[k]
 
-    return tr_embeddings, val_embeddings
+    return tr_embeddings_dict, val_embeddings_dict
 
 
 if __name__ == "__main__":
@@ -83,12 +83,12 @@ if __name__ == "__main__":
     print("Computing caption embeddings...")
     tfidf_args = {'max_df':0.5, 'min_df':10e-5, 'smooth_idf':True}
     svd_args = {'n_components':2048, 'n_iter':7}
-    tr_embeddings, val_embeddings = construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_args)
+    tr_embeddings_dict, val_embeddings_dict = construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_args)
 
     # Save dicts containing train and validation embeddings
     print("Saving results...")
-    with open('./Data/train_embeddings_v20', 'wb') as output:
+    with open('./Data/train_embeddings_v20.pkl', 'wb') as output:
         pickle.dump(tr_embeddings, output, pickle.HIGHEST_PROTOCOL)
 
-    with open('./Data/val_embeddings_v20', 'wb') as output:
+    with open('./Data/val_embeddings_v20.pkl', 'wb') as output:
         pickle.dump(val_embeddings, output, pickle.HIGHEST_PROTOCOL)
