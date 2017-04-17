@@ -36,18 +36,34 @@ def load_data(path, filenames, nb_images=None):
 
 def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
-                   samples_generator=None, generator_args=None):
+                   samples_generator=None, generator_args=None,
+                   val_gen=None, val_gen_args=None, nb_val_samples=None):
 
     train_history = History()
     early_stopping = EarlyStopping(monitor='val_loss', patience=5)
 
+    # generate train (validation) data with a generator
     if fit_style == "gen":
-        model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
+
+        # No validation data generator
+        if val_gen == None:
+            model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
                             samples_per_epoch=samples_per_epoch,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
                             verbose=1,
                             callbacks=[train_history, early_stopping])
+
+        # Validation data generator passed in arg
+        else:
+            model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
+                                samples_per_epoch=samples_per_epoch,
+                                nb_epoch=nb_epoch,
+                                validation_data=val_gen(**val_gen_args),
+                                verbose=1,
+                                callbacks=[train_history, early_stopping])
+
+    # No generator used to fit model
     else:
         model.fit(x_train, y_train,
                   nb_epoch=nb_epoch,
@@ -95,9 +111,11 @@ autoencoder.summary()
 
 print("Fitting model...")
 generator_args = {'path':train_path, 'fn_list':train_fn, 'seq_embeddings':train_embeddings}
+val_gen_args = {'samples_per_epoch':40438, 'batch_size':2000,'path':val_path, 'fn_list':val_fn, 'seq_embeddings':val_embeddings}
 autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
                x_val=[xi_val, xe_val], y_val=y_val,
-               samples_generator=generate_samples_v20, generator_args=generator_args)
+               samples_generator=generate_samples_v20, generator_args=generator_args,
+                val_gen=generate_samples_v20, val_gen_args=val_gen_args)
 
 print("Saving model")
 autoencoder.save_weights('./Results/Models_v2/' + model_name + '.h5')
