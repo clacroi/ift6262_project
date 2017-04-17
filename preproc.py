@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # Save dicts containing train and validation embeddings
     print("Saving results...")
     with open('./Data/train_embeddings_v20.pkl', 'wb') as output:
-        pickle.dump(tr_embeddings, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(tr_embeddings_dict, output, pickle.HIGHEST_PROTOCOL)
 
     with open('./Data/val_embeddings_v20.pkl', 'wb') as output:
-        pickle.dump(val_embeddings, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(val_embeddings_dict, output, pickle.HIGHEST_PROTOCOL)
