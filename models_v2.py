@@ -83,7 +83,9 @@ def generate_samples_v20(samples_per_epoch, batch_size, path, fn_list,
 
                 # Construct image captions embedding
                 im_captions = captions_dict[fn.split(".")[0]]
+                print(im_captions)
                 im_embed = svd.transform(vectorizer.transform(" ".join(im_captions)))
+                print(im_embed)
                 batch_embeddings.append(im_embed)
 
                 # Construct image
