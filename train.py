@@ -97,9 +97,9 @@ if __name__ == "__main__":
     x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
     # Convolutional Auto-Encoder v1.0
-    model_name = "convautoencoder_v12"
+    model_name = "convautoencoder_v13"
     print("Compiling model...")
-    autoencoder = model_v12()
+    autoencoder = model_v13()
     autoencoder.summary()
 
     print("Fitting model...")
