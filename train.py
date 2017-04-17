@@ -83,54 +83,32 @@ if __name__ == "__main__":
 
     print("Loading data...")
 
-    # Training Data
-    with open("./Data/train_images_fn.pkl", 'rb') as input:
-        train_fn = pickle.load(input)
-
-    #with open("../Data/inpainting/train_embeddings_v20.pkl", 'rb') as input:
-    #    train_embeddings = pickle.load(input)
-
-    # Validation Data
+    # Load valid validation images filenames
     with open("./Data/val_images_fn.pkl", 'rb') as input:
         val_fn = pickle.load(input)
 
-    #with open("../Data/inpainting/val_embeddings_v20.pkl", 'rb') as input:
-    #    val_embeddings = pickle.load(input)
+    # Load python dict containing channel-wise means and stds
+    with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
+        val_meanStd_dict = pickle.load(input, encoding='latin1')
 
-    #xi_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
-    #xe_val = np.array([val_embeddings[fn.split(".")[0]] for fn in val_fn]) # load validation captions embeddings
-    #y_val = xi_val[:, :, 16:48, 16:48].copy() # construct y_val
-    #xi_val[:, :, 16:48, 16:48] = 0 # fill xi_val central region with 0s
+    x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
+    y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
+    x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
 
-    # Preprocessing pipeline models
-    with open("../Data/inpainting/dict_key_imgID_value_caps_train_and_valid.pkl", 'rb') as input:
-        captions_dict = pickle.load(input, encoding='latin1')
-    
-    with open('./Data/vectorizer_v02.pkl', 'rb') as input:
-        vectorizer = pickle.load(input)
-
-    with open('./Data/svd_v02.pkl', 'rb') as input:
-        svd = pickle.load(input)
-
-    # Convolutional Auto-Encoder v2.0
-    model_name = "convautoencoder_v20"
-
+    # Convolutional Auto-Encoder v1.0
+    model_name = "convautoencoder_v12"
     print("Compiling model...")
-    autoencoder = model_v20()
+    autoencoder = model_v12()
     autoencoder.summary()
 
     print("Fitting model...")
-    generator_args = {'path':train_path, 'fn_list':train_fn, 'captions_dict':captions_dict, 'vectorizer':vectorizer, 'svd':svd}
-    val_gen_args = {'samples_per_epoch':40438, 'batch_size':2000,'path':val_path,
-                    'fn_list':val_fn, 'captions_dict':captions_dict, 'vectorizer':vectorizer, 'svd':svd}
-    autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
-                   #x_val=[xi_val, xe_val], y_val=y_val,
-                   samples_generator=generate_samples_v20, generator_args=generator_args,
-                    val_gen=generate_samples_v20, val_gen_args=val_gen_args,
-                    nb_val_samples=NB_VAL_SAMPLES)
 
-    print("Saving model")
-    autoencoder.save_weights('./Results/Models_v2/' + model_name + '.h5')
+    generator_args = {'path':train_path, 'fn_list':train_fn}
+    autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
+                   x_val=x_val, y_val=y_val,
+                   samples_generator=generate_samples_v10, generator_args=generator_args)
+
+    autoencoder.save('./Results/Models_v1/' + model_name + '.h5')
     print(autoencoder_train.history)
-    with open('./Results/Models_v2/' + model_name + '_trainHistory.pkl', 'wb') as output:
+    with open('./Results/Models_v1/' + model_name + '_trainHistory.pkl', 'wb') as output:
         pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)

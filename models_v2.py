@@ -10,41 +10,36 @@ def model_v20():
 
     # Construct layer for text processing
     text_branch = models.Sequential()
-    text_branch.add(Dense(512, input_dim=2048))
+    text_branch.add(Dense(60, input_dim=2048))
     text_branch.add(RepeatVector(4096))
-    text_branch.add(Permute((2, 1), input_shape=(4096, 512)))
-    text_branch.add(Reshape((512, 64, 64), input_shape=(512, 4096)))
+    text_branch.add(Permute((2, 1), input_shape=(4096, 60)))
+    text_branch.add(Reshape((60, 64, 64), input_shape=(60, 4096)))
     text_branch.add(BatchNormalization())
     text_branch.add(Activation('relu'))
-    text_branch.add(Permute((2, 3, 1), input_shape=(512, 64, 64))) # permute tensors for concatenating
+    text_branch.add(Permute((2, 3, 1), input_shape=(60, 64, 64))) # permute tensors for concatenating
 
     # Construct input layer for images
     image_branch = models.Sequential()
     image_branch.add(Permute((2, 3, 1), input_shape=(3, 64, 64))) # permute tensors for concatenating
-
-    # Merge inputs branches
-    merged = models.Sequential()
-    merged.add(Merge([image_branch, text_branch], mode='concat'))
-    merged.add(Permute((3, 1, 2), input_shape=(64, 64, 515)))
 
     # Construct encoder
     encoder = models.Sequential()
     encoder.add(merged)
 
     encoder.add(
-        Convolution2D(32, 5, 5, border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
+        Convolution2D(64, 5, 5, border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
     encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
 
     encoder.add(
-            Convolution2D(32, 4, 4, border_mode='same', input_shape=(64, 32, 32), dim_ordering='th'))
+            Convolution2D(64, 4, 4, border_mode='same', input_shape=(64, 32, 32), dim_ordering='th'))
     encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
 
     encoder.add(
-        Convolution2D(64, 3, 3, border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(128, 3, 3, border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
     encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
@@ -60,10 +55,10 @@ def model_v20():
     decoder.add(Reshape((64, 8, 8)))
 
     decoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
+        Convolution2D(128, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
     decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     decoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(64, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
     decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     decoder.add(
         Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))

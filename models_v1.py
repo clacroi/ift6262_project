@@ -89,7 +89,7 @@ def model_v11():
     autoencoder.add(BatchNormalization(mode=0, axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
-    # Output : (16, 8, 8)
+    # Output : (64, 8, 8)
 
     # Intermediate layer
     autoencoder.add(Flatten())
@@ -111,3 +111,66 @@ def model_v11():
     autoencoder.compile(optimizer='adam', loss='mse')
 
     return autoencoder
+
+
+def model_v12():
+
+    encoder = models.Sequential()
+
+    encoder.add(
+        Convolution2D(32, 5, 5, border_mode='valid', input_shape=(3, 64, 64), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(
+        Convolution2D(64, 5, 5, border_mode='valid', strides=(2,2), input_shape=(32, 60, 60), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(
+        Convolution2D(64, 5, 5, border_mode='valid', input_shape=(64, 32, 32), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(
+        Convolution2D(128, 5, 5, border_mode='valid', strides=(2, 2), input_shape=(64, 24, 24), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(
+        Convolution2D(256, 3, 3, border_mode='valid', input_shape=(128, 10, 10), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(
+        Convolution2D(256, 3, 3, border_mode='valid', input_shape=(256, 6, 6), dim_ordering='th'))
+    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(Activation('relu'))
+
+    encoder.add(Flatten())
+    encoder.add(Dense(1024))
+    encoder.add(Dense(4096))
+    encoder.add(Reshape((256, 4, 4)))
+
+    # Decoder
+    decoder = models.Sequential()
+    decoder.add(encoder)
+
+    decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+    decoder.add(
+        Convolution2D(128, 3, 3, activation='relu', border_mode='same', input_shape=(256, 4, 4), dim_ordering='th'))
+
+    decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+    decoder.add(
+        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(128, 8, 8), dim_ordering='th'))
+
+    decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+    decoder.add(
+        Convolution2D(32, 3, 3, activation='relu', border_mode='same', input_shape=(64, 16, 16), dim_ordering='th'))
+
+    decoder.add(
+        Convolution2D(3, 3, 3, activation='sigmoid', border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
+
+    decoder.compile(optimizer='adam', loss='mse')
+
+    return decoder

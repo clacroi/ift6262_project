@@ -16,9 +16,12 @@ wget https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
 bash Anaconda3-4.2.0-Linux-x86_64.sh
 source .bashrc
 
+#sudo apt-get install python3-pip
+
 # Install Theano and Keras
 pip install --upgrade --no-deps git+git://github.com/Theano/Theano.git
 pip install keras
+#pip install keras==1.2.2
 
 # Copy Theano and Keras configuration files
 cp ./keras.json ~/.keras/keras.json
