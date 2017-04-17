@@ -86,15 +86,15 @@ if __name__ == "__main__":
     with open("./Data/train_images_fn.pkl", 'rb') as input:
         train_fn = pickle.load(input)
 
-    with open("../Data/inpainting/train_embeddings_v20.pkl", 'rb') as input:
-        train_embeddings = pickle.load(input)
+    #with open("../Data/inpainting/train_embeddings_v20.pkl", 'rb') as input:
+    #    train_embeddings = pickle.load(input)
 
     # Validation Data
     with open("./Data/val_images_fn.pkl", 'rb') as input:
         val_fn = pickle.load(input)
 
-    with open("../Data/inpainting/val_embeddings_v20.pkl", 'rb') as input:
-        val_embeddings = pickle.load(input)
+    #with open("../Data/inpainting/val_embeddings_v20.pkl", 'rb') as input:
+    #    val_embeddings = pickle.load(input)
 
     #xi_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
     #xe_val = np.array([val_embeddings[fn.split(".")[0]] for fn in val_fn]) # load validation captions embeddings
@@ -102,10 +102,10 @@ if __name__ == "__main__":
     #xi_val[:, :, 16:48, 16:48] = 0 # fill xi_val central region with 0s
 
     # Preprocessing pipeline models
-    with open('./Data/vectorizer_v02.pkl', 'wb') as input:
-        vectorizer = pickle.load(input)
+    #with open('./Data/vectorizer_v02.pkl', 'rb') as input:
+    #    vectorizer = pickle.load(input)
 
-    with open('./Data/svd_v02.pkl', 'wb') as input:
+    with open('./Data/svd_v02.pkl', 'rb') as input:
         svd = pickle.load(input)
 
     # Convolutional Auto-Encoder v2.0
