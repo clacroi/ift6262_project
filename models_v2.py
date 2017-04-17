@@ -70,14 +70,21 @@ def model_v20():
 
     return decoder
 
-def generate_samples_v20(samples_per_epoch, batch_size, path, fn_list, seq_embeddings):
+def generate_samples_v20(samples_per_epoch, batch_size, path, fn_list,
+                         captions_dict, vectorizer, svd):
 
     while 1:
         for i in range(0, samples_per_epoch, batch_size):
             batch_embeddings = []
             batch_images = []
             for fn in fn_list[i:i + batch_size]:
-                batch_embeddings.append(seq_embeddings[fn.split('.')[0]])
+
+                # Construct image captions embedding
+                im_captions = captions_dict[fn.split(".")[0]]
+                im_embed = svd.transform(vectorizer.transform(" ".join(im_captions)))
+                batch_embeddings.append(im_embed)
+
+                # Construct image
                 im = mpimg.imread(path + fn)
                 batch_images.append(im.transpose(2, 0, 1))
 
