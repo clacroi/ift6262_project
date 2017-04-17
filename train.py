@@ -83,14 +83,15 @@ if __name__ == "__main__":
 
     print("Loading data...")
 
+    # Load train images filenames
+    with open("./Data/val_images_fn.pkl", 'rb') as input:
+        train_fn = pickle.load(input)
+
     # Load valid validation images filenames
     with open("./Data/val_images_fn.pkl", 'rb') as input:
         val_fn = pickle.load(input)
 
-    # Load python dict containing channel-wise means and stds
-    with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
-        val_meanStd_dict = pickle.load(input, encoding='latin1')
-
+    # Construct validation data (x_val, y_val)
     x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
     y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
     x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s

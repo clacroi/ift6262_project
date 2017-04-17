@@ -123,7 +123,7 @@ def model_v12():
     encoder.add(Activation('relu'))
 
     encoder.add(
-        Convolution2D(64, 5, 5, border_mode='valid', strides=(2,2), input_shape=(32, 60, 60), dim_ordering='th'))
+        Convolution2D(64, 5, 5, border_mode='valid', subsample=(2,2), input_shape=(32, 60, 60), dim_ordering='th'))
     encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
 
@@ -133,7 +133,7 @@ def model_v12():
     encoder.add(Activation('relu'))
 
     encoder.add(
-        Convolution2D(128, 5, 5, border_mode='valid', strides=(2, 2), input_shape=(64, 24, 24), dim_ordering='th'))
+        Convolution2D(128, 5, 5, border_mode='valid', subsample=(2, 2), input_shape=(64, 24, 24), dim_ordering='th'))
     encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
 
