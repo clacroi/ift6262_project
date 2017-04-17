@@ -40,8 +40,8 @@ def construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_ar
 
     # Construct tfidf vectors for train and val captions
     print("TFIDF vectorizing...")
-    vectorizer = TfidfVectorizer(**tfidf_args)
-    vectorizer.fit(tr_corpus + val_corpus)
+    tfidf = TfidfVectorizer(**tfidf_args)
+    tfidf.fit(tr_corpus + val_corpus)
     tr_tfidf = vectorizer.transform(tr_corpus)
 
     # Fit SVD transformation on train captions and
@@ -49,11 +49,11 @@ def construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_ar
     print("Computing SVD...")
     svd = TruncatedSVD(**svd_args)
     svd.fit(tr_tfidf)
-    print(str(svd.explained_variance_ratio_.sum()) + "% variance explained by " + str(svd_args['n_components']) + "components")
+    print(str(svd.explained_variance_ratio_.sum()) + "% variance explained by " + str(svd_args['n_components']) + " components")
 
     # Save vectorizer and svd fitted models
     with open('./Data/vectorizer_v02.pkl', 'wb') as output:
-        pickle.dump(vectorizer, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(tfidf, output, pickle.HIGHEST_PROTOCOL)
 
     with open('./Data/svd_v02.pkl', 'wb') as output:
         pickle.dump(svd, output, pickle.HIGHEST_PROTOCOL)
