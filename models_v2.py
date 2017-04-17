@@ -67,7 +67,9 @@ def model_v20():
     decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     decoder.add(
         Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
-
+    
+    decoder.compile(optimizer='adam', loss='mse')
+    
     return decoder
 
 def generate_samples_v20(samples_per_epoch, batch_size, path, fn_list,

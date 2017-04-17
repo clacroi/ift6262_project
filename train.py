@@ -126,7 +126,8 @@ if __name__ == "__main__":
     autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
                    #x_val=[xi_val, xe_val], y_val=y_val,
                    samples_generator=generate_samples_v20, generator_args=generator_args,
-                    val_gen=generate_samples_v20, val_gen_args=val_gen_args)
+                    val_gen=generate_samples_v20, val_gen_args=val_gen_args,
+                    nb_val_samples=NB_VAL_SAMPLES)
 
     print("Saving model")
     autoencoder.save_weights('./Results/Models_v2/' + model_name + '.h5')
