@@ -181,15 +181,15 @@ def model_v13():
 
     encoder.add(
         Convolution2D(32, 5, 5, border_mode='valid', input_shape=(3, 64, 64), dim_ordering='th'))
-    encoder.add(BatchNormalization())
+    encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
-    encoder.add(Dropout(0.8))
+    encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, border_mode='valid', subsample=(2,2), input_shape=(32, 60, 60), dim_ordering='th'))
-    encoder.add(BatchNormalization())
+    encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
-    encoder.add(Dropout(0.8))
+    encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, border_mode='valid', input_shape=(64, 32, 32), dim_ordering='th'))
@@ -198,21 +198,21 @@ def model_v13():
 
     encoder.add(
         Convolution2D(128, 5, 5, border_mode='valid', subsample=(2,2), input_shape=(64, 24, 24), dim_ordering='th'))
-    encoder.add(BatchNormalization())
+    encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
-    encoder.add(Dropout(0.8))
+    encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, border_mode='valid', input_shape=(128, 10, 10), dim_ordering='th'))
-    encoder.add(BatchNormalization())
+    encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
-    encoder.add(Dropout(0.8))
+    encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, border_mode='valid', input_shape=(256, 6, 6), dim_ordering='th'))
-    encoder.add(BatchNormalization())
+    encoder.add(BatchNormalization(mode=0, axis=1))
     encoder.add(Activation('relu'))
-    encoder.add(Dropout(0.8))
+    encoder.add(Dropout(0.15))
 
     encoder.add(Flatten())
     encoder.add(Dense(1024))
