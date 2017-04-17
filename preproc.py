@@ -42,7 +42,7 @@ def construct_seq_embeddings(train_fn, val_fn, captions_dict, tfidf_args, svd_ar
     print("TFIDF vectorizing...")
     tfidf = TfidfVectorizer(**tfidf_args)
     tfidf.fit(tr_corpus + val_corpus)
-    tr_tfidf = vectorizer.transform(tr_corpus)
+    tr_tfidf = tfidf.transform(tr_corpus)
 
     # Fit SVD transformation on train captions and
     # predict vectors for train and val captions
