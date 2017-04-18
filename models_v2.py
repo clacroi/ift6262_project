@@ -55,7 +55,7 @@ def model_v20():
     decoder.add(Reshape((64, 8, 8)))
 
     decoder.add(
-        Convolution2D(128, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
+        Convolution2D(128, 3, 3, activation='relu', border_mode='same', input_shape=(64, 8, 8), dim_ordering='th'))
     decoder.add(UpSampling2D((2, 2), dim_ordering='th'))
     decoder.add(
         Convolution2D(64, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
