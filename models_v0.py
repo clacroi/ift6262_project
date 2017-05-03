@@ -3,7 +3,7 @@ import matplotlib.image as mpimg
 
 import keras.models as models
 from keras.models import Model
-from keras.layers.core import Layer, Dense, Flatten, Reshape, Input
+from keras.layers.core import Layer, Dense, Flatten, Reshape
 from keras.layers import Input
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
