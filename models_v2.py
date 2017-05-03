@@ -4,7 +4,7 @@ import matplotlib.image as mpimg
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute, RepeatVector
 from keras.layers import merge
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
+from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
 
 def model_v20():
@@ -28,19 +28,19 @@ def model_v20():
     encoder.add(merged)
 
     encoder.add(
-        Convolution2D(64, 5, 5, padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
+        Conv2D(64, 5, 5, padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     encoder.add(
-            Convolution2D(64, 4, 4, padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
+            Conv2D(64, 4, 4, padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
     encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     encoder.add(
-        Convolution2D(128, 3, 3, padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
+        Conv2D(128, 3, 3, padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
@@ -56,13 +56,13 @@ def model_v20():
     decoder.add(Reshape((64, 8, 8)))
 
     decoder.add(
-        Convolution2D(128, 3, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
+        Conv2D(128, 3, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
     decoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     decoder.add(
-        Convolution2D(64, 4, 4, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
+        Conv2D(64, 4, 4, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     decoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     decoder.add(
-        Convolution2D(3, 5, 5, activation='sigmoid', padding='same', input_shape=(3, 32, 32), data_format='channels_first'))
+        Conv2D(3, 5, 5, activation='sigmoid', padding='same', input_shape=(3, 32, 32), data_format='channels_first'))
     
     decoder.compile(optimizer='adam', loss='mse')
     
