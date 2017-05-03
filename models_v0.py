@@ -19,25 +19,25 @@ def model_v01():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(32, 3, 3, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(32, 3, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 16, 16), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 16, 16), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (16, 8, 8)
 
     # Decoder
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 3, 3, activation='sigmoid', border_mode='same', input_shape=(16, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 3, 3, activation='sigmoid', padding='same', input_shape=(16, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='binary_crossentropy')
@@ -64,25 +64,25 @@ def model_v02():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(32, 3, 3, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(32, 3, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 16, 16), dim_ordering='th'))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 16, 16), data_format='channels_first'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (16, 8, 8)
 
     # Decoder
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 3, 3, activation='sigmoid', border_mode='same', input_shape=(16, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 3, 3, activation='sigmoid', padding='same', input_shape=(16, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='mse')
@@ -116,17 +116,17 @@ def model_v03():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(64, 5, 5, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
+        Convolution2D(64, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(64, 32, 32), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
 
     # Intermediate layer
@@ -136,13 +136,13 @@ def model_v03():
 
     # Decoder
     autoencoder.add(
-        Convolution2D(16, 3, 3, activation='relu', border_mode='same', input_shape=(16, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(16, 3, 3, activation='relu', padding='same', input_shape=(16, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, activation='sigmoid', padding='same', input_shape=(3, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='mse')
@@ -156,17 +156,17 @@ def model_v04():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(32, 5, 5, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
+        Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(64, 32, 32), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (16, 8, 8)
 
     # Intermediate layer
@@ -176,13 +176,13 @@ def model_v04():
 
     # Decoder
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(64, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, activation='sigmoid', border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, activation='sigmoid', padding='same', input_shape=(3, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='mse')
@@ -196,17 +196,17 @@ def model_v04():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(32, 5, 5, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
+        Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(64, 32, 32), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
 
     # Intermediate layer
@@ -216,13 +216,13 @@ def model_v04():
 
     # Decoder
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(64, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, border_mode='same', input_shape=(3, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, padding='same', input_shape=(3, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adadelta', loss='mse')
@@ -236,33 +236,33 @@ def model_v041():
     # Encoder
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
-        Convolution2D(32, 5, 5, activation='relu', border_mode='same', input_shape=(3, 64, 64), dim_ordering='th'))
+        Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(32, 16, 16), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
     autoencoder.add(BatchNormalization(mode=0, axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), border_mode='same', dim_ordering='th'))
+    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
 
     # Intermediate layer
     autoencoder.add(Flatten())
     autoencoder.add(Dense(4096))
-    autoencoder.add(Reshape((64, 8, 8)))
+    autoencoder.add(Reshape((-1, 64, 8, 8)))
 
     # Decoder
     autoencoder.add(
-        Convolution2D(64, 3, 3, activation='relu', border_mode='same', input_shape=(3, 8, 8), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(32, 4, 4, activation='relu', border_mode='same', input_shape=(64, 16, 16), dim_ordering='th'))
-    autoencoder.add(UpSampling2D((2, 2), dim_ordering='th'))
+        Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first'))
+    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
     autoencoder.add(
-        Convolution2D(3, 5, 5, border_mode='same', input_shape=(32, 32, 32), dim_ordering='th'))
+        Convolution2D(3, 5, 5, padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
     # Output : (3, 32, 32)
 
     autoencoder.compile(optimizer='adam', loss='mse')

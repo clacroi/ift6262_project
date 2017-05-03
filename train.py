@@ -13,6 +13,8 @@ BATCH_SIZE = 200
 NB_EPOCH = 50
 NB_SAMPLES_PER_EPOCH = 82610
 NB_VAL_SAMPLES = 40438
+STEPS_PER_EPOCH = 414
+VALIDATION_STEPS = 203
 FIT_STYLE = "gen"
 
 
@@ -34,10 +36,11 @@ def load_data(path, filenames, nb_images=None):
     return np.array(images_list)
 
 
-def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
+def evaluate_model(model, fit_style,
+                   batch_size, nb_epoch, samples_per_epoch, steps_per_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
                    samples_generator=None, generator_args=None,
-                   val_gen=None, val_gen_args=None, nb_val_samples=None):
+                   val_gen=None, val_gen_args=None, validation_steps=None):
 
     train_history = History()
     early_stopping = EarlyStopping(monitor='val_loss', patience=5)
@@ -48,7 +51,7 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
         # No validation data generator
         if val_gen == None:
             model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
-                            samples_per_epoch=samples_per_epoch,
+                            steps_per_epoch=steps_per_epoch,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
                             verbose=1,
@@ -57,10 +60,10 @@ def evaluate_model(model, fit_style, batch_size, nb_epoch, samples_per_epoch,
         # Validation data generator passed in arg
         else:
             model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
-                                samples_per_epoch=samples_per_epoch,
+                                steps_per_epoch=steps_per_epoch,
                                 nb_epoch=nb_epoch,
                                 validation_data=val_gen(**val_gen_args),
-                                nb_val_samples=nb_val_samples, 
+                                validation_steps=validation_steps,
                                 verbose=1,
                                 callbacks=[train_history, early_stopping])
 
@@ -83,33 +86,42 @@ if __name__ == "__main__":
 
     print("Loading data...")
 
-    # Load train images filenames
-    with open("./Data/val_images_fn.pkl", 'rb') as input:
+    # Load valid train images filenames
+    with open("./Data/train_images_fn.pkl", 'rb') as input:
         train_fn = pickle.load(input)
+
+    # Load python dict containing train channel-wise means and stds
+    with open("./Data/train_meanStd_dict.pkl", 'rb') as input:
+        train_meanStd_dict = pickle.load(input, encoding='latin1')
 
     # Load valid validation images filenames
     with open("./Data/val_images_fn.pkl", 'rb') as input:
         val_fn = pickle.load(input)
 
-    # Construct validation data (x_val, y_val)
-    x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)/255.0 # load validation images
-    y_val = x_val[:, :, 16:48, 16:48].copy() # construct y_val
-    x_val[:, :, 16:48, 16:48] = 0 # fill x_val central region with 0s
+    # Load python dict containing val channel-wise means and stds
+    with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
+        val_meanStd_dict = pickle.load(input, encoding='latin1')
 
-    # Convolutional Auto-Encoder v1.0
-    model_name = "convautoencoder_v13"
+    x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)  # load validation images
+    x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
+    x_val[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
+    y_val = x_val[:, :, 16:48, 16:48].copy()  # construct y_val
+
+    # Convolutional Auto-Encoder v0.1
+    model_name = "convautoencoder_v041"
     print("Compiling model...")
-    autoencoder = model_v13()
+    autoencoder = model_v041()
     autoencoder.summary()
 
     print("Fitting model...")
 
-    generator_args = {'path':train_path, 'fn_list':train_fn}
-    autoencoder_train = evaluate_model(autoencoder, "gen", BATCH_SIZE, NB_EPOCH, NB_SAMPLES_PER_EPOCH,
-                   x_val=x_val, y_val=y_val,
-                   samples_generator=generate_samples_v10, generator_args=generator_args)
+    generator_args = {'path': train_path, 'fn_list': train_fn, 'meanStd_dict': train_meanStd_dict}
+    autoencoder_train = evaluate_model(autoencoder, "gen",
+                                       BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
+                                       x_val=x_val, y_val=y_val,
+                                       samples_generator=generate_samples_v02, generator_args=generator_args)
 
-    autoencoder.save('./Results/Models_v1/' + model_name + '.h5')
+    autoencoder.save_weights('./Results/Models_v0/' + model_name + '.h5')
     print(autoencoder_train.history)
-    with open('./Results/Models_v1/' + model_name + '_trainHistory.pkl', 'wb') as output:
+    with open('./Results/Models_v0/' + model_name + '_trainHistory.pkl', 'wb') as output:
         pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
