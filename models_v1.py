@@ -16,19 +16,19 @@ def model_v10():
 
     autoencoder.add(
         Convolution2D(32, 5, 5, padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     autoencoder.add(
         Convolution2D(32, 4, 4, padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     autoencoder.add(
         Convolution2D(64, 3, 3, padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
@@ -79,19 +79,19 @@ def model_v11():
 
     autoencoder.add(
         Convolution2D(32, 5, 5, padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     autoencoder.add(
         Convolution2D(32, 4, 4, padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     autoencoder.add(
         Convolution2D(64, 3, 3, padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(Activation('relu'))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
@@ -126,32 +126,32 @@ def model_v12():
 
     encoder.add(
         Convolution2D(32, 5, 5, padding='valid', input_shape=(3, 64, 64), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', subsample=(2,2), input_shape=(32, 60, 60), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', input_shape=(64, 28, 28), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(128, 5, 5, padding='valid', subsample=(2,2), input_shape=(64, 24, 24), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(128, 10, 10), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(256, 6, 6), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(Flatten())
@@ -188,36 +188,36 @@ def model_v13():
 
     encoder.add(
         Convolution2D(32, 5, 5, padding='valid', input_shape=(3, 64, 64), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', subsample=(2,2), input_shape=(32, 60, 60), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', input_shape=(64, 28, 28), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
 
     encoder.add(
         Convolution2D(128, 5, 5, padding='valid', subsample=(2,2), input_shape=(64, 24, 24), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(128, 10, 10), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(256, 6, 6), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(Dropout(0.15))
 
@@ -255,36 +255,36 @@ def model_v14():
 
     encoder.add(
         Convolution2D(32, 5, 5, padding='valid', input_shape=(3, 64, 64), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', subsample=(2,2), input_shape=(32, 60, 60), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='valid', input_shape=(64, 28, 28), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
 
     encoder.add(
         Convolution2D(128, 5, 5, padding='valid', subsample=(2,2), input_shape=(64, 24, 24), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(128, 10, 10), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
     encoder.add(Dropout(0.15))
 
     encoder.add(
         Convolution2D(256, 3, 3, padding='valid', input_shape=(256, 6, 6), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('tanh'))
     encoder.add(Dropout(0.15))
 

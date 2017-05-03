@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.image as mpimg
 
 import keras.models as models
-from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute, RepeatVector, Merge
+from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute, RepeatVector
+from keras.layers import merge
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
 
@@ -28,19 +29,19 @@ def model_v20():
 
     encoder.add(
         Convolution2D(64, 5, 5, padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     encoder.add(
             Convolution2D(64, 4, 4, padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
 
     encoder.add(
         Convolution2D(128, 3, 3, padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    encoder.add(BatchNormalization(mode=0, axis=1))
+    encoder.add(BatchNormalization(axis=1))
     encoder.add(Activation('relu'))
     encoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
         # Output : (16, 8, 8)

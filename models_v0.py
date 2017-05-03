@@ -157,15 +157,15 @@ def model_v04():
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
         Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (16, 8, 8)
 
@@ -197,15 +197,15 @@ def model_v04():
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
         Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
 
@@ -237,15 +237,15 @@ def model_v041():
     autoencoder.add(Layer(input_shape=(3, 64, 64)))
     autoencoder.add(
         Convolution2D(32, 5, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(32, 4, 4, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     autoencoder.add(
         Convolution2D(64, 3, 3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(mode=0, axis=1))
+    autoencoder.add(BatchNormalization(axis=1))
     autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
     # Output : (64, 8, 8)
 
