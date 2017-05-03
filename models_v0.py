@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.image as mpimg
 
 import keras.models as models
-from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute
-#from keras.layers import Merge
+from keras.models import Model
+from keras.layers.core import Layer, Dense, Flatten, Reshape, Input
+from keras.layers import Input
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.wrappers import TimeDistributed
@@ -234,7 +235,8 @@ def model_v041():
     # Define model
     autoencoder = models.Sequential()
     # Encoder
-    autoencoder.add(Layer(input_shape=(3, 64, 64)))
+    inputs = Input(shape=(3,64,64))
+    autoencoder.add(inputs)
     autoencoder.add(
         Conv2D(32, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
     autoencoder.add(BatchNormalization(axis=1))
