@@ -403,7 +403,7 @@ def model_v15():
     dec2 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')(dec2)
     # 64*32*32
 
-    dec3 = ZeroPadding2D(padding=10, data_format='channels_first')(dec1_3)
+    dec3 = ZeroPadding2D(padding=8, data_format='channels_first')(dec1_3)
     dec3 = layers.add([dec3, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
     dec3 = layers.concatenate([dec2, dec3])
     dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128,32,32), data_format='channels_first')(dec3)
