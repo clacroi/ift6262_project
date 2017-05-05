@@ -388,7 +388,7 @@ def model_v15():
 
     
     # Merged layers
-    dec1 = ZeroPadding2D(padding=4, data_format='channels_first')(dec1_1)
+    dec1 = ZeroPadding2D(padding=3, data_format='channels_first')(dec1_1)
     dec1 = layers.add([dec1, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
     dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(dec1)
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
