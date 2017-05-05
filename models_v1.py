@@ -394,7 +394,7 @@ def model_v15():
     # Merged layers
     dec1 = ZeroPadding2D(padding=(1, 1), data_format=None)(dec1_1)
     t = Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)
-    dec1 = Add([dec1, t])
+    dec1 = Add(([dec1, t]))
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
     dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(dec1)
     # 256*8*8
