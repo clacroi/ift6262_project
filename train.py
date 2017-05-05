@@ -86,40 +86,32 @@ if __name__ == "__main__":
 
     print("Loading data...")
 
-    # Load valid train images filenames
-    with open("./Data/train_images_fn.pkl", 'rb') as input:
-        train_fn = pickle.load(input)
-
-    # Load python dict containing train channel-wise means and stds
-    with open("./Data/train_meanStd_dict.pkl", 'rb') as input:
-        train_meanStd_dict = pickle.load(input, encoding='latin1')
-
     # Load valid validation images filenames
     with open("./Data/val_images_fn.pkl", 'rb') as input:
         val_fn = pickle.load(input)
 
-    # Load python dict containing val channel-wise means and stds
+    # Load python dict containing channel-wise means and stds
     with open("./Data/val_meanStd_dict.pkl", 'rb') as input:
         val_meanStd_dict = pickle.load(input, encoding='latin1')
 
-    x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)  # load validation images
-    x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-    #x_val[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
+    x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES) / 255.0  # load validation images
+    # x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
     y_val = x_val[:, :, 16:48, 16:48].copy()  # construct y_val
+    x_val[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
 
-    # Convolutional Auto-Encoder v0.1
-    model_name = "convautoencoder_v041"
+    # Convolutional Auto-Encoder v1.0
+    model_name = "convautoencoder_v15"
     print("Compiling model...")
-    autoencoder = model_v041()
+    autoencoder = model_v15()
     autoencoder.summary()
 
     print("Fitting model...")
 
-    generator_args = {'path': train_path, 'fn_list': train_fn, 'meanStd_dict': train_meanStd_dict}
+    generator_args = {'path': train_path, 'fn_list': train_fn}
     autoencoder_train = evaluate_model(autoencoder, "gen",
                                        BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
                                        x_val=x_val, y_val=y_val,
-                                       samples_generator=generate_samples_v02, generator_args=generator_args)
+                                       samples_generator=generate_samples_v10, generator_args=generator_args)
 
     autoencoder.save_weights('./Results/Models_v0/' + model_name + '.h5')
     print(autoencoder_train.history)
