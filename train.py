@@ -98,7 +98,7 @@ if __name__ == "__main__":
     #x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
     y_val = x_val[:, :, 16:48, 16:48].copy()  # construct y_val
     x_val_cond = x_val.copy()
-    x_val_cond[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
+    #x_val_cond[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
 
     # Convolutional Auto-Encoder v1.0
     model_name = "convautoencoder_v15"
