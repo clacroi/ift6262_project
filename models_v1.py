@@ -348,7 +348,6 @@ def model_v15():
     encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
-    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
     encoder = Lambda(center_slice, output_shape=(512,2,2))(encoder)
     # Output : (64, 8, 8)
