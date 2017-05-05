@@ -348,7 +348,7 @@ def model_v15():
     encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
-    encoder = Cropping2D(cropping=((1,3), (1,3)), data_format='channels_first')(encoder)
+    encoder = Cropping2D(cropping=1, data_format='channels_first')(encoder)
     #encoder = Lambda(center4_slice, output_shape=(512,2,2))(encoder)
     # Output : (512, 2, 2)
 
@@ -412,9 +412,9 @@ def model_v15():
     dec3 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(64,64,64), data_format='channels_first')(dec3)
     # 32*64*64
 
-    dec4 = Conv2D(16, 3, activation='sigmoid', padding='same', input_shape=(32,64,64), data_format='channels_first')(dec3)
+    dec4 = Conv2D(3, 3, activation='sigmoid', padding='same', input_shape=(32,64,64), data_format='channels_first')(dec3)
     #decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec4)
-    decoder_outputs = Cropping2D(cropping=((16, 48), (16, 48)), data_format='channels_first')(dec4)
+    decoder_outputs = Cropping2D(cropping=16, data_format='channels_first')(dec4)
     # 3*32*32 --> 3 channels image
 
 
