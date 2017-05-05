@@ -37,7 +37,7 @@ def load_data(path, filenames, nb_images=None):
 
 
 def evaluate_model(model, fit_style,
-                   batch_size, nb_epoch, samples_per_epoch, steps_per_epoch,
+                   batch_size, nb_epoch, steps_per_epoch, samples_per_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
                    samples_generator=None, generator_args=None,
                    val_gen=None, val_gen_args=None, validation_steps=None):
@@ -50,6 +50,7 @@ def evaluate_model(model, fit_style,
 
         # No validation data generator
         if val_gen == None:
+            print("ok")
             model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
                             steps_per_epoch=steps_per_epoch,
                             nb_epoch=nb_epoch,
