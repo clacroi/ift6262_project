@@ -3,7 +3,7 @@ import matplotlib.image as mpimg
 
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Lambda
-from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
+from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, Cropping2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Input
 from keras.models import Model
@@ -348,8 +348,8 @@ def model_v15():
     encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
-
-    encoder = Lambda(center_slice, output_shape=(512,2,2))(encoder)
+    encoder = Cropping2D(cropping=((1,3), (1, 3)), data_format='channels_first')
+    #encoder = Lambda(center_slice, output_shape=(512,2,2))(encoder)
     # Output : (64, 8, 8)
 
     # Intermediate layer
