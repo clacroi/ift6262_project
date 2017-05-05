@@ -326,7 +326,7 @@ def model_v15():
 
     # Encoder
     im = Input(shape=(3, 64, 64), name='full image')
-    cond = Input(shape=(3, 64, 64), name='border')
+    cond = Lambda(Zero64CenterPadding, output_shape=(3,64,64))(im)
 
     encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(im)
     encoder = BatchNormalization(axis=1)(encoder)
@@ -395,7 +395,7 @@ def model_v15():
     dec1 = ZeroPadding2D(padding=(1, 1), data_format=None)(dec1_1)
     dec1 = Add([dec1, Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)])
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
-    dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(cond)
+    dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(dec1)
     # 256*8*8
 
     dec2 = ZeroPadding2D(padding=(2, 2), data_format=None)(dec1_2)
@@ -463,21 +463,31 @@ def center64_slice(x):
 #     return floatX(mask)
 
 def Zero4CenterPadding(x):
-    mask = np.zeros((4,4))
-    mask[1:3,1:3] = np.ones((2,2))
+    mask = np.ones((4,4))
+    mask[1:3,1:3] = np.zeros((2,2))
     return x * mask
 
 def Zero8CenterPadding(x):
-    mask = np.zeros((8,8))
-    mask[2:6,2:6] = np.ones((4,4))
+    mask = np.ones((8,8))
+    mask[2:6,2:6] = np.zeros((4,4))
     return x * mask
 
 def Zero16CenterPadding(x):
-    mask = np.zeros((16,16))
-    mask[4:12,4:12] = np.ones((8,8))
+    mask = np.ones((16,16))
+    mask[4:12,4:12] = np.zeros((8,8))
     return x * mask
 
 def Zero32CenterPadding(x):
-    mask = np.zeros((32,32))
-    mask[8:24,8:24] = np.ones((16,16))
+    mask = np.ones((32,32))
+    mask[8:24,8:24] = np.zeros((16,16))
+    return x * mask
+
+def Zero32CenterPadding(x):
+    mask = np.ones((32,32))
+    mask[8:24,8:24] = np.zeros((16,16))
+    return x * mask
+
+def Zero64CenterPadding(x):
+    mask = np.ones((64,64))
+    mask[16:48,16:48] = np.zeros((32,32))
     return x * mask

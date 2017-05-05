@@ -96,8 +96,7 @@ if __name__ == "__main__":
 
     x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES) / 255.0  # load validation images
     #x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-    y_val = x_val[:, :, 16:48, 16:48].copy()  # construct y_val
-    x_val_cond = x_val.copy()
+    y_val = x_val[:, :, 16:48, 16:48]  # construct y_val
     #x_val_cond[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
 
     # Convolutional Auto-Encoder v1.0
@@ -111,7 +110,7 @@ if __name__ == "__main__":
     generator_args = {'path': train_path, 'fn_list': train_fn}
     autoencoder_train = evaluate_model(autoencoder, "gen",
                                        BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
-                                       x_val=[x_val, x_val_cond], y_val=y_val,
+                                       x_val=x_val, y_val=y_val,
                                        samples_generator=generate_samples_v15, generator_args=generator_args)
 
     autoencoder.save_weights('./Results/Models_v0/' + model_name + '.h5')
