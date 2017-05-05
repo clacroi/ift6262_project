@@ -434,10 +434,8 @@ def generate_samples_v15(samples_per_epoch, batch_size, path, fn_list):
 
             batch_X = np.array(batch_images) / 255.0
             batch_Y = batch_X[:,:,16:48,16:48].copy()
-            batch_X_cond = batch_X.copy()
-            batch_X_cond[:,:,16:48,16:48] = 0.0
 
-            yield ([batch_X, batch_X_cond], batch_Y)
+            yield (batch_X, batch_Y)
 
 def center4_slice(x):
     return x[:,1:3,1:3]
