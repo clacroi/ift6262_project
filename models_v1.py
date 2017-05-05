@@ -7,6 +7,7 @@ from keras.layers.convolutional import Conv2D, UpSampling2D, Cropping2D, ZeroPad
 from keras.layers.pooling import MaxPool2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.merge import Multiply, Add, Concatenate
+from keras import layers
 from keras.layers import Input
 from keras.models import Model
 
@@ -394,7 +395,7 @@ def model_v15():
     # Merged layers
     dec1 = ZeroPadding2D(padding=(1, 1), data_format=None)(dec1_1)
     t = Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)
-    dec1 = Add(([dec1, t]))
+    dec1 = layers.add([dec1, t])
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
     dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(dec1)
     # 256*8*8
