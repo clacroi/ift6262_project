@@ -395,7 +395,7 @@ def model_v15():
     dec1 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')(dec1)
     # 128*16*16
 
-    dec2 = ZeroPadding2D(padding=5, data_format='channels_first')(dec1_2)
+    dec2 = ZeroPadding2D(padding=6, data_format='channels_first')(dec1_2)
     dec2 = layers.add([dec2, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
     dec2 = layers.concatenate([dec1, dec2])
     dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')(dec2)
@@ -403,7 +403,7 @@ def model_v15():
     dec2 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')(dec2)
     # 64*32*32
 
-    dec3 = ZeroPadding2D(padding=9, data_format='channels_first')(dec1_3)
+    dec3 = ZeroPadding2D(padding=10, data_format='channels_first')(dec1_3)
     dec3 = layers.add([dec3, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
     dec3 = layers.concatenate([dec2, dec3])
     dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128,32,32), data_format='channels_first')(dec3)
