@@ -232,41 +232,33 @@ def model_v04():
 
 def model_v041():
 
-    # Define model
-    autoencoder = models.Sequential()
     # Encoder
     inputs = Input(shape=(3,64,64))
-    autoencoder.add(inputs)
-    autoencoder.add(
-        Conv2D(32, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
-    autoencoder.add(
-        Conv2D(32, 4, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
-    autoencoder.add(
-        Conv2D(64,  3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first'))
-    autoencoder.add(BatchNormalization(axis=1))
-    autoencoder.add(MaxPooling2D((2, 2), padding='same', data_format='channels_first'))
+    encoder = Conv2D(32, 5, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(inputs)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(32, 4, activation='relu', padding='same', input_shape=(32, 32, 32), data_format='channels_first')(encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(64,  3, activation='relu', padding='same', input_shape=(32, 16, 16), data_format='channels_first')(encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
     # Output : (64, 8, 8)
 
     # Intermediate layer
-    autoencoder.add(Flatten())
-    autoencoder.add(Dense(4096))
-    autoencoder.add(Reshape((-1, 64, 8, 8)))
+    encoder = Flatten()(encoder)
+    encoder = Dense(4096)(encoder)
+    decoder = Reshape((-1, 64, 8, 8))(encoder)
 
     # Decoder
-    autoencoder.add(
-        Conv2D(64,  3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first'))
-    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
-    autoencoder.add(
-        Conv2D(32, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first'))
-    autoencoder.add(UpSampling2D((2, 2), data_format='channels_first'))
-    autoencoder.add(
-        Conv2D(3, 5, padding='same', input_shape=(32, 32, 32), data_format='channels_first'))
+    decoder = Conv2D(64,  3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first')(decoder)
+    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
+    decoder = Conv2D(32, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first')(decoder)
+    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
+    decoder = Conv2D(3, 5, padding='same', input_shape=(32, 32, 32), data_format='channels_first')(decoder)
     # Output : (3, 32, 32)
 
-    autoencoder.compile(optimizer='adam', loss='mse')
+    model = Model(inputs=inputs, outputs=decoder)
+    model.compile(optimizer='adam', loss='mse')
 
-    return autoencoder
+    return model
