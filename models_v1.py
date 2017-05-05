@@ -324,26 +324,27 @@ def model_v15():
 
     # Encoder
     inputs = Input(shape=(3, 64, 64))
+
     encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(
         inputs)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
     encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
     encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
-    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(
-        encoder)
-    encoder = BatchNormalization(axis=1)(encoder)
-    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
     encoder = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
     encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
@@ -357,8 +358,8 @@ def model_v15():
     encoder = Dense(1024)(encoder)
 
     # Decoder
-    decoder = Dense(4096)(encoder)
-    decoder = Reshape((64, 8, 8))(decoder)
+    decoder = Dense(2048)(encoder)
+    decoder = Reshape((512, 2, 2))(decoder)
     decoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first')(
         decoder)
     decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
