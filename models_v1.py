@@ -347,9 +347,10 @@ def model_v15():
 
     encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
-    #encoder = Cropping2D(cropping=((1,3), (1, 3)), data_format='channels_first')
-    encoder = Lambda(center4_slice, output_shape=(512,2,2))(encoder)
-    # Output : (64, 8, 8)
+    encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Cropping2D(cropping=((1,3), (1,3)), data_format='channels_first')(encoder)
+    #encoder = Lambda(center4_slice, output_shape=(512,2,2))(encoder)
+    # Output : (512, 2, 2)
 
     # Intermediate layer
     encoder = Flatten()(encoder)
@@ -414,7 +415,8 @@ def model_v15():
     dec4 = Conv2D(16, 3, activation='sigmoid', padding='same', input_shape=(32,64,64), data_format='channels_first')(dec3)
     # 3*64*64 --> 3 channels image
 
-    decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec4)
+    #decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec4)
+    decoder_outputs = Cropping2D(cropping=((16, 48), (16, 48)), data_format='channels_first')(dec4)
     # 3*32*32
 
     model = Model(inputs=im, outputs=decoder_outputs)
@@ -467,11 +469,6 @@ def Zero8CenterPadding(x):
 def Zero16CenterPadding(x):
     mask = np.ones((16,16))
     mask[4:12,4:12] = np.zeros((8,8))
-    return x * mask
-
-def Zero32CenterPadding(x):
-    mask = np.ones((32,32))
-    mask[8:24,8:24] = np.zeros((16,16))
     return x * mask
 
 def Zero32CenterPadding(x):
