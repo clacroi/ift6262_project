@@ -359,20 +359,18 @@ def model_v15():
     # z branch
     dec1_1 = Dense(2048)(encoder)
     dec1_1 = Reshape((512, 2, 2))(dec1_1)
-    dec1_1 = Conv2D(512, 3, activation='relu', padding='same', input_shape=(512, 2, 2), data_format='channels_first')(dec1_1)
-    # 512*2*2
-
-    dec1_2 = UpSampling2D((2, 2), data_format='channels_first')(dec1_1)
-    dec1_2 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 4, 4), data_format='channels_first')(dec1_2)
+    UpSampling2D((2, 2), data_format='channels_first')(dec1_1)
+    dec1_1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 4, 4), data_format='channels_first')(dec1_1)
     # 256*4*4
 
-    dec1_3 = UpSampling2D((2, 2), data_format='channels_first')(dec1_2)
-    dec1_3 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(128, 8, 8), data_format='channels_first')(dec1_3)
+
+    dec1_2 = UpSampling2D((2, 2), data_format='channels_first')(dec1_1)
+    dec1_2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(dec1_2)
     # 128*8*8
 
-    dec1_4 = UpSampling2D((2, 2), data_format='channels_first')(dec1_3)
-    dec1_4 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first')(dec1_4)
-    dec1_4 = UpSampling2D((2, 2), data_format='channels_first')(dec1_4)
+    dec1_3 = UpSampling2D((2, 2), data_format='channels_first')(dec1_2)
+    dec1_3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(dec1_3)
+    dec1_3 = UpSampling2D((2, 2), data_format='channels_first')(dec1_3)
     # 64*16*16
 
     # Conditional border branch
@@ -388,45 +386,38 @@ def model_v15():
     dec2_3 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_3)
     # 256*8*8
 
-    dec2_4 = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(dec2_3)
-    dec2_4 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_4)
-    # 512*4*4
     
     # Merged layers
-    dec1 = ZeroPadding2D(padding=1, data_format=None)(dec1_1)
-    dec1 = layers.add([dec1, Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)])
+    dec1 = ZeroPadding2D(padding=2, data_format='channels_first')(dec1_1)
+    dec1 = layers.add([dec1, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
+    dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(dec1)
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
-    dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(dec1)
-    # 256*8*8
-
-    dec2 = ZeroPadding2D(padding=2, data_format=None)(dec1_2)
-    dec2 = layers.add([dec2, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
-    dec2 = Concatenate([dec1, dec2])
-    dec2 = UpSampling2D((2, 2), data_format='channels_first')(dec2)
-    dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(512, 16, 16), data_format='channels_first')(dec2)
+    dec1 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')(dec1)
     # 128*16*16
 
-    dec3 = ZeroPadding2D(padding=4, data_format=None)(dec1_3)
-    dec3 = layers.add([dec3, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
-    dec3 = Concatenate([dec2, dec3])
+    dec2 = ZeroPadding2D(padding=4, data_format='channels_first')(dec1_2)
+    dec2 = layers.add([dec2, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
+    dec2 = layers.concatenate([dec1, dec2])
+    dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')(dec2)
+    dec2 = UpSampling2D((2, 2), data_format='channels_first')(dec2)
+    dec2 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')(dec2)
+    # 64*32*32
+
+    dec3 = ZeroPadding2D(padding=4, data_format='channels_first')(dec1_3)
+    dec3 = layers.add([dec3, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
+    dec3 = layers.concatenate([dec2, dec3])
+    dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128,32,32), data_format='channels_first')(dec3)
     dec3 = UpSampling2D((2, 2), data_format='channels_first')(dec3)
-    dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(256,16,16), data_format='channels_first')(dec3)
-    # 64*32*32
+    dec3 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(64,64,64), data_format='channels_first')(dec3)
+    # 32*64*64
 
-    dec4 = ZeroPadding2D(padding=8, data_format=None)(dec1_4)
-    dec4 = layers.add([dec4, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
-    dec4 = Concatenate([dec3, dec4])
-    dec4 = UpSampling2D((2, 2), data_format='channels_first')(dec4)
-    dec4 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(128,64,64), data_format='channels_first')(dec4)
-    # 64*32*32
+    dec4 = Conv2D(16, 3, activation='sigmoid', padding='same', input_shape=(32,64,64), data_format='channels_first')(dec3)
+    # 3*64*64 --> 3 channels image
 
-    dec5 = UpSampling2D((2, 2), data_format='channels_first')(dec4)
-    dec5 = Conv2D(3, 3, activation='relu', padding='same', input_shape=(128, 64, 64), data_format='channels_first')(dec5)
+    decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec4)
     # 3*32*32
 
-    decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec5)
-
-    model = Model(inputs=[im, cond], outputs=decoder_outputs)
+    model = Model(inputs=im, outputs=decoder_outputs)
     model.compile(optimizer='adam', loss='mse')
 
     return model
