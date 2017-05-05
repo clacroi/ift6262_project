@@ -3,9 +3,10 @@ import matplotlib.image as mpimg
 
 import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Lambda
-from keras.layers.convolutional import Conv2D, UpSampling2D, Cropping2D
+from keras.layers.convolutional import Conv2D, UpSampling2D, Cropping2D, ZeroPadding2D
 from keras.layers.pooling import MaxPool2D
 from keras.layers.normalization import BatchNormalization
+from keras.layers.merge import Multiply, Add, Concatenate
 from keras.layers import Input
 from keras.models import Model
 
@@ -324,33 +325,29 @@ def model_v14():
 def model_v15():
 
     # Encoder
-    inputs = Input(shape=(3, 64, 64))
+    im = Input(shape=(3, 64, 64), name='full image')
+    cond = Input(shape=(3, 64, 64), name='border')
 
-    encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(
-        inputs)
+    encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(im)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(
-        encoder)
+    encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(
-        encoder)
+    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(
-        encoder)
+    encoder = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(
-        encoder)
+    encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
-    encoder = Cropping2D(cropping=((1,3), (1, 3)), data_format='channels_first')
-    #encoder = Lambda(center_slice, output_shape=(512,2,2))(encoder)
+    #encoder = Cropping2D(cropping=((1,3), (1, 3)), data_format='channels_first')
+    encoder = Lambda(center4_slice, output_shape=(512,2,2))(encoder)
     # Output : (64, 8, 8)
 
     # Intermediate layer
@@ -358,24 +355,129 @@ def model_v15():
     encoder = Dense(1024)(encoder)
 
     # Decoder
-    decoder = Dense(2048)(encoder)
-    decoder = Reshape((512, 2, 2))(decoder)
-    decoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first')(
-        decoder)
-    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
-    decoder = Conv2D(32, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first')(
-        decoder)
-    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
-    decoder = Conv2D(3, 5, padding='same', input_shape=(32, 32, 32), data_format='channels_first')(decoder)
-    # Output : (3, 32, 32)
+    # z branch
+    dec1_1 = Dense(2048)(encoder)
+    dec1_1 = Reshape((512, 2, 2))(dec1_1)
+    dec1_1 = Conv2D(512, 3, activation='relu', padding='same', input_shape=(512, 2, 2), data_format='channels_first')(dec1_1)
+    # 512*2*2
 
-    model = Model(inputs=inputs, outputs=decoder)
+    dec1_2 = UpSampling2D((2, 2), data_format='channels_first')(dec1_1)
+    dec1_2 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 4, 4), data_format='channels_first')(dec1_2)
+    # 256*4*4
+
+    dec1_3 = UpSampling2D((2, 2), data_format='channels_first')(dec1_2)
+    dec1_3 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(128, 8, 8), data_format='channels_first')(dec1_3)
+    # 128*8*8
+
+    dec1_4 = UpSampling2D((2, 2), data_format='channels_first')(dec1_3)
+    dec1_4 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first')(dec1_4)
+    dec1_4 = UpSampling2D((2, 2), data_format='channels_first')(dec1_4)
+    # 64*16*16
+
+    # Conditional border branch
+    dec2_1 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(cond)
+    dec2_1 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_1)
+    # 64*32*32
+
+    dec2_2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(dec2_1)
+    dec2_2 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_2)
+    # 128*16*16
+
+    dec2_3 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(dec2_2)
+    dec2_3 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_3)
+    # 256*8*8
+
+    dec2_4 = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(dec2_3)
+    dec2_4 = MaxPool2D((2, 2), padding='same', data_format='channels_first')(dec2_4)
+    # 512*4*4
+    
+    # Merged layers
+    dec1 = ZeroPadding2D(padding=(1, 1), data_format=None)(dec1_1)
+    dec1 = Add([dec1, Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)])
+    dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
+    dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(cond)
+    # 256*8*8
+
+    dec2 = ZeroPadding2D(padding=(2, 2), data_format=None)(dec1_2)
+    dec2 = Add([dec2, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
+    dec2 = Concatenate([dec1, dec2])
+    dec2 = UpSampling2D((2, 2), data_format='channels_first')(dec2)
+    dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(512, 16, 16), data_format='channels_first')(dec2)
+    # 128*16*16
+
+    dec3 = ZeroPadding2D(padding=(4, 4), data_format=None)(dec1_3)
+    dec3 = Add([dec3, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
+    dec3 = Concatenate([dec2, dec3])
+    dec3 = UpSampling2D((2, 2), data_format='channels_first')(dec3)
+    dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(256,16,16), data_format='channels_first')(dec3)
+    # 64*32*32
+
+    dec4 = ZeroPadding2D(padding=(8, 8), data_format=None)(dec1_4)
+    dec4 = Add([dec4, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
+    dec4 = Concatenate([dec3, dec4])
+    dec4 = UpSampling2D((2, 2), data_format='channels_first')(dec4)
+    dec4 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(128,64,64), data_format='channels_first')(dec4)
+    # 64*32*32
+
+    dec5 = UpSampling2D((2, 2), data_format='channels_first')(dec4)
+    dec5 = Conv2D(3, 3, activation='relu', padding='same', input_shape=(128, 64, 64), data_format='channels_first')(dec5)
+    # 3*32*32
+
+    decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec5)
+
+    model = Model(inputs=[im, cond], outputs=decoder_outputs)
     model.compile(optimizer='adam', loss='mse')
 
     return model
 
-def center_slice(x):
+def generate_samples_v15(samples_per_epoch, batch_size, path, fn_list):
+
+    while 1:
+        for i in range(0, samples_per_epoch, batch_size):
+            batch_images = []
+            for fn in fn_list[i:i + batch_size]:
+                im = mpimg.imread(path + fn)
+                batch_images.append(im.transpose(2, 0, 1))
+
+            batch_X = np.array(batch_images) / 255.0
+            batch_Y = batch_X[:,:,16:48,16:48].copy()
+            batch_X_cond = batch_X.copy()
+            batch_X_cond[:,:,16:48,16:48] = 0.0
+
+            yield ([batch_X, batch_X_cond], batch_Y)
+
+def center4_slice(x):
     return x[:,1:3,1:3]
 
-def center_slice_output_shape(input_shape):
-    return ()
+def center64_slice(x):
+    return x[:,16:48,16:48]
+
+# def floatX(x):
+#     return np.asarray(x,dtype=K.config.floatX)
+#
+# def init_weights(shape):
+#     i = shape[0]/4
+#     j = 3 * (shape[0]/4) + 1
+#     mask = np.zeros(shape)
+#     mask[i:j, i:j] = np.ones((shape[0]/2, shape[0]/2))
+#     return floatX(mask)
+
+def Zero4CenterPadding(x):
+    mask = np.zeros((4,4))
+    mask[1:3,1:3] = np.ones((2,2))
+    return x * mask
+
+def Zero8CenterPadding(x):
+    mask = np.zeros((8,8))
+    mask[2:6,2:6] = np.ones((4,4))
+    return x * mask
+
+def Zero16CenterPadding(x):
+    mask = np.zeros((16,16))
+    mask[4:12,4:12] = np.ones((8,8))
+    return x * mask
+
+def Zero32CenterPadding(x):
+    mask = np.zeros((32,32))
+    mask[8:24,8:24] = np.ones((16,16))
+    return x * mask
