@@ -5,6 +5,8 @@ import keras.models as models
 from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Lambda
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
+from keras.layers import Input
+from keras.models import Model
 
 import theano.tensor as T
 from keras import backend as K
@@ -372,7 +374,7 @@ def model_v15():
     return model
 
 def center_slice(x):
-    return x[,1:3,1:3]
+    return x[:,1:3,1:3]
 
 def center_slice_output_shape(input_shape):
     return ()
