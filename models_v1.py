@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.image as mpimg
 
 import keras.models as models
-from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Permute
+from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshape, Lambda
 from keras.layers.convolutional import Conv2D, MaxPooling2D, UpSampling2D, ZeroPadding2D, Deconvolution2D
 from keras.layers.normalization import BatchNormalization
 
+import theano.tensor as T
+from keras import backend as K
 
 def model_v10():
 
@@ -315,3 +317,62 @@ def model_v14():
     decoder.compile(optimizer='adam', loss='mse')
 
     return decoder
+
+def model_v15():
+
+    # Encoder
+    inputs = Input(shape=(3, 64, 64))
+    encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(
+        inputs)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(
+        encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(
+        encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(
+        encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(
+        encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+    encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(
+        encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPooling2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
+    encoder = Lambda(center_slice, output_shape=(512,2,2))(encoder)
+    # Output : (64, 8, 8)
+
+    # Intermediate layer
+    encoder = Flatten()(encoder)
+    encoder = Dense(1024)(encoder)
+
+    # Decoder
+    decoder = Dense(4096)(encoder)
+    decoder = Reshape((64, 8, 8))(decoder)
+    decoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first')(
+        decoder)
+    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
+    decoder = Conv2D(32, 4, activation='relu', padding='same', input_shape=(64, 16, 16), data_format='channels_first')(
+        decoder)
+    decoder = UpSampling2D((2, 2), data_format='channels_first')(decoder)
+    decoder = Conv2D(3, 5, padding='same', input_shape=(32, 32, 32), data_format='channels_first')(decoder)
+    # Output : (3, 32, 32)
+
+    model = Model(inputs=inputs, outputs=decoder)
+    model.compile(optimizer='adam', loss='mse')
+
+    return model
+
+def center_slice(x):
+    return x[,1:3,1:3]
+
+def center_slice_output_shape(input_shape):
+    return ()

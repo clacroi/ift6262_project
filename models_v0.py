@@ -248,7 +248,7 @@ def model_v041():
     # Intermediate layer
     encoder = Flatten()(encoder)
     encoder = Dense(4096)(encoder)
-    decoder = Reshape((-1, 64, 8, 8))(encoder)
+    decoder = Reshape((64, 8, 8))(encoder)
 
     # Decoder
     decoder = Conv2D(64,  3, activation='relu', padding='same', input_shape=(64, 8, 8), data_format='channels_first')(decoder)

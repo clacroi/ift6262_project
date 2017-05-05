@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     x_val = load_data(val_path, val_fn, NB_VAL_SAMPLES)  # load validation images
     x_val = normalize_images(x_val, val_fn, val_meanStd_dict) # normalize validation images
-    x_val[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
+    #x_val[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
     y_val = x_val[:, :, 16:48, 16:48].copy()  # construct y_val
 
     # Convolutional Auto-Encoder v0.1
