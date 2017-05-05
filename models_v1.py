@@ -398,7 +398,7 @@ def model_v15():
 
     dec2 = ZeroPadding2D(padding=6, data_format='channels_first')(dec1_2)
     dec2 = layers.add([dec2, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
-    dec2 = layers.concatenate([dec1, dec2])
+    dec2 = layers.concatenate([dec1, dec2], axis=1)
     dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')(dec2)
     dec2 = UpSampling2D((2, 2), data_format='channels_first')(dec2)
     dec2 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')(dec2)
@@ -406,18 +406,17 @@ def model_v15():
 
     dec3 = ZeroPadding2D(padding=8, data_format='channels_first')(dec1_3)
     dec3 = layers.add([dec3, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
-    dec3 = layers.concatenate([dec2, dec3])
+    dec3 = layers.concatenate([dec2, dec3], axis=1)
     dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128,32,32), data_format='channels_first')(dec3)
     dec3 = UpSampling2D((2, 2), data_format='channels_first')(dec3)
     dec3 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(64,64,64), data_format='channels_first')(dec3)
     # 32*64*64
 
     dec4 = Conv2D(16, 3, activation='sigmoid', padding='same', input_shape=(32,64,64), data_format='channels_first')(dec3)
-    # 3*64*64 --> 3 channels image
-
     #decoder_outputs = Lambda(center64_slice, output_shape=(3,32,32))(dec4)
     decoder_outputs = Cropping2D(cropping=((16, 48), (16, 48)), data_format='channels_first')(dec4)
-    # 3*32*32
+    # 3*32*32 --> 3 channels image
+
 
     model = Model(inputs=im, outputs=decoder_outputs)
     model.compile(optimizer='adam', loss='mse')
