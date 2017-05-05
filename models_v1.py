@@ -393,29 +393,28 @@ def model_v15():
     # 512*4*4
     
     # Merged layers
-    dec1 = ZeroPadding2D(padding=(1, 1), data_format=None)(dec1_1)
-    t = Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)
-    dec1 = layers.add([dec1, t])
+    dec1 = ZeroPadding2D(padding=1, data_format=None)(dec1_1)
+    dec1 = layers.add([dec1, Lambda(Zero4CenterPadding, output_shape=(512,4,4))(dec2_4)])
     dec1 = UpSampling2D((2, 2), data_format='channels_first')(dec1)
     dec1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 8, 8), data_format='channels_first')(dec1)
     # 256*8*8
 
-    dec2 = ZeroPadding2D(padding=(2, 2), data_format=None)(dec1_2)
-    dec2 = Add([dec2, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
+    dec2 = ZeroPadding2D(padding=2, data_format=None)(dec1_2)
+    dec2 = layers.add([dec2, Lambda(Zero8CenterPadding, output_shape=(256,8,8))(dec2_3)])
     dec2 = Concatenate([dec1, dec2])
     dec2 = UpSampling2D((2, 2), data_format='channels_first')(dec2)
     dec2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(512, 16, 16), data_format='channels_first')(dec2)
     # 128*16*16
 
-    dec3 = ZeroPadding2D(padding=(4, 4), data_format=None)(dec1_3)
-    dec3 = Add([dec3, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
+    dec3 = ZeroPadding2D(padding=4, data_format=None)(dec1_3)
+    dec3 = layers.add([dec3, Lambda(Zero16CenterPadding, output_shape=(128,16,16))(dec2_2)])
     dec3 = Concatenate([dec2, dec3])
     dec3 = UpSampling2D((2, 2), data_format='channels_first')(dec3)
     dec3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(256,16,16), data_format='channels_first')(dec3)
     # 64*32*32
 
-    dec4 = ZeroPadding2D(padding=(8, 8), data_format=None)(dec1_4)
-    dec4 = Add([dec4, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
+    dec4 = ZeroPadding2D(padding=8, data_format=None)(dec1_4)
+    dec4 = layers.add([dec4, Lambda(Zero32CenterPadding, output_shape=(64,32,32))(dec2_1)])
     dec4 = Concatenate([dec3, dec4])
     dec4 = UpSampling2D((2, 2), data_format='channels_first')(dec4)
     dec4 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(128,64,64), data_format='channels_first')(dec4)
