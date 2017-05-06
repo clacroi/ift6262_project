@@ -21,7 +21,6 @@ def model_vae_10(batch_size, original_dim):
     encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(
         im)
     encoder = BatchNormalization(axis=1)(encoder)
-    encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
     encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(
         encoder)
@@ -42,14 +41,14 @@ def model_vae_10(batch_size, original_dim):
         encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
-    encoder = Cropping2D(cropping=0, data_format='channels_first')(encoder)
+    encoder = Cropping2D(cropping=1, data_format='channels_first')(encoder)
     # Output : (512, 2, 2)
     encoder = Flatten()(encoder)
 
     # Sample z ~ Q(z|X,y)
     enc_m = Dense(512, activation='linear')(encoder)
     enc_s = Dense(512, activation='linear')(encoder)
-    z = Lambda(sample_z)([enc_m, enc_s])
+    z = Lambda(sample_z, output_shape=(512,))([enc_m, enc_s])
 
 
     # Decoder : P(c|z,b)
