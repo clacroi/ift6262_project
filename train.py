@@ -6,7 +6,9 @@ from keras import backend as K
 from models_v0 import *
 from models_v1 import *
 from models_v2 import *
+from models_vae import *
 from preproc import *
+from generators import *
 
 PROJ_PATH = '/home/ec2-user/project'
 BATCH_SIZE = 200
@@ -101,20 +103,20 @@ if __name__ == "__main__":
     #x_val_cond[:, :, 16:48, 16:48] = 0  # fill x_val central region with 0s
 
     # Convolutional Auto-Encoder v1.0
-    model_name = "convautoencoder_v15"
+    model_name = "vae_01"
     print("Compiling model...")
-    autoencoder = model_v15()
-    autoencoder.summary()
+    vae = model_vae_10(BATCH_SIZE, 1024)
+    vae.summary()
 
     print("Fitting model...")
 
     generator_args = {'path': train_path, 'fn_list': train_fn}
-    autoencoder_train = evaluate_model(autoencoder, "gen",
+    vae_train = evaluate_model(vae, "gen",
                                        BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
                                        x_val=x_val, y_val=y_val,
                                        samples_generator=generate_samples_v15, generator_args=generator_args)
 
-    autoencoder.save_weights('./Results/Models_v0/' + model_name + '.h5')
-    print(autoencoder_train.history)
+    vae.save_weights('./Results/Models_v0/' + model_name + '.h5')
+    print(vae_train.history)
     with open('./Results/Models_v0/' + model_name + '_trainHistory.pkl', 'wb') as output:
-        pickle.dump(autoencoder_train.history, output, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(vae_train.history, output, pickle.HIGHEST_PROTOCOL)

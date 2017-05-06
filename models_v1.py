@@ -6,13 +6,12 @@ from keras.layers.core import Layer, Dense, Dropout, Activation, Flatten, Reshap
 from keras.layers.convolutional import Conv2D, UpSampling2D, Cropping2D, ZeroPadding2D
 from keras.layers.pooling import MaxPool2D
 from keras.layers.normalization import BatchNormalization
-from keras.layers.merge import Multiply, Add, Concatenate
 from keras import layers
 from keras.layers import Input
 from keras.models import Model
 
-import theano.tensor as T
-from keras import backend as K
+from custom_layers import *
+
 
 def model_v10():
 
@@ -61,21 +60,6 @@ def model_v10():
     autoencoder.compile(optimizer='adam', loss='mse')
 
     return autoencoder
-
-def generate_samples_v10(samples_per_epoch, batch_size, path, fn_list):
-
-    while 1:
-        for i in range(0, samples_per_epoch, batch_size):
-            batch_images = []
-            for fn in fn_list[i:i + batch_size]:
-                im = mpimg.imread(path + fn)
-                batch_images.append(im.transpose(2, 0, 1))
-
-            batch_X = np.array(batch_images) / 255.0
-            batch_Y = batch_X[:,:,16:48,16:48].copy()
-            batch_X[:,:,16:48,16:48] = 0.0
-
-            yield (batch_X, batch_Y)
 
 def model_v11():
 
@@ -422,58 +406,3 @@ def model_v15():
     model.compile(optimizer='adam', loss='mse')
 
     return model
-
-def generate_samples_v15(samples_per_epoch, batch_size, path, fn_list):
-
-    while 1:
-        for i in range(0, samples_per_epoch, batch_size):
-            batch_images = []
-            for fn in fn_list[i:i + batch_size]:
-                im = mpimg.imread(path + fn)
-                batch_images.append(im.transpose(2, 0, 1))
-
-            batch_X = np.array(batch_images) / 255.0
-            batch_Y = batch_X[:,:,16:48,16:48].copy()
-
-            yield (batch_X, batch_Y)
-
-def center4_slice(x):
-    return x[:,1:3,1:3]
-
-def center64_slice(x):
-    return x[:,16:48,16:48]
-
-# def floatX(x):
-#     return np.asarray(x,dtype=K.config.floatX)
-#
-# def init_weights(shape):
-#     i = shape[0]/4
-#     j = 3 * (shape[0]/4) + 1
-#     mask = np.zeros(shape)
-#     mask[i:j, i:j] = np.ones((shape[0]/2, shape[0]/2))
-#     return floatX(mask)
-
-def Zero4CenterPadding(x):
-    mask = np.ones((4,4), dtype='float32')
-    mask[1:3,1:3] = np.zeros((2,2), dtype='float32')
-    return x * mask
-
-def Zero8CenterPadding(x):
-    mask = np.ones((8,8), dtype='float32')
-    mask[2:6,2:6] = np.zeros((4,4), dtype='float32')
-    return x * mask
-
-def Zero16CenterPadding(x):
-    mask = np.ones((16,16), dtype='float32')
-    mask[4:12,4:12] = np.zeros((8,8), dtype='float32')
-    return x * mask
-
-def Zero32CenterPadding(x):
-    mask = np.ones((32,32), dtype='float32')
-    mask[8:24,8:24] = np.zeros((16,16), dtype='float32')
-    return x * mask
-
-def Zero64CenterPadding(x):
-    mask = np.ones((64,64), dtype='float32')
-    mask[16:48,16:48] = np.zeros((32,32), dtype='float32')
-    return x * mask

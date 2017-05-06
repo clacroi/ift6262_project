@@ -46,18 +46,6 @@ def model_v01():
     return autoencoder
 
 
-def generate_samples_v01(samples_per_epoch, batch_size, fn_list):
-    while 1:
-        for i in range(0, samples_per_epoch, batch_size):
-            batch_images = []
-            for fn in fn_list[i:i + batch_size]:
-                im = mpimg.imread(fn)
-                batch_images.append(im.transpose(2, 0, 1))
-
-            batch_X = np.array(batch_images) / 255.0
-            yield (batch_X, batch_X[:,:,16:48,16:48])
-
-
 def model_v02():
 
     # Define model
@@ -89,26 +77,6 @@ def model_v02():
     autoencoder.compile(optimizer='adadelta', loss='mse')
 
     return autoencoder
-
-def generate_samples_v02(samples_per_epoch, batch_size, path, fn_list, meanStd_dict):
-    while 1:
-        for i in range(0, samples_per_epoch, batch_size):
-            batch_images = []
-            for fn in fn_list[i:i + batch_size]:
-                im = mpimg.imread(path + fn)
-                mean, std = meanStd_dict[fn]
-
-                norm_im = np.zeros((3, 64, 64))
-                for k in range(3):
-                    norm_im[k, :, :] = (im[:, :, k] - mean[2-k]) / std[2-k]
-
-                batch_images.append(norm_im)
-
-            batch_X = np.array(batch_images)
-            batch_Y = batch_X[:,:,16:48,16:48].copy()
-            batch_X[:,:,16:48,16:48] = 0.0
-
-            yield (batch_X, batch_Y)
 
 def model_v03():
 
