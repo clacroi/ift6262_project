@@ -104,16 +104,16 @@ if __name__ == "__main__":
     # Convolutional Auto-Encoder v1.0
     model_name = "vae_01"
     print("Compiling model...")
-    vae = model_vae_10(BATCH_SIZE, 1024)
+    vae, generator, encoder = model_vae_10(BATCH_SIZE, 1024)
     vae.summary()
 
     print("Fitting model...")
 
     generator_args = {'path': train_path, 'fn_list': train_fn}
     vae_train = evaluate_model(vae, "gen",
-                                       BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
-                                       x_val=x_val, y_val=y_val,
-                                       samples_generator=generate_samples_v15, generator_args=generator_args)
+                               BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
+                                x_val=x_val, y_val=y_val,
+                                samples_generator=generate_samples_v15, generator_args=generator_args)
 
     vae.save_weights('./Results/Models_v0/' + model_name + '.h5')
     print(vae_train.history)
