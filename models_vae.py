@@ -13,6 +13,9 @@ from custom_layers import *
 
 from keras import backend as K
 
+BATCH_SIZE = 10
+N_Z = 512
+
 def model_vae_10(batch_size, original_dim):
     # Encoder
     im = Input(shape=(3, 64, 64), name='full image')
@@ -134,6 +137,6 @@ def model_vae_10(batch_size, original_dim):
 def sample_z(args):
     mu, log_sigma = args
     #eps = np.random.randn(200, 512).astype('float32')
-    eps = K.random_normal(shape=(200, 512), mean=0.,stddev=1.0)
+    eps = K.random_normal(shape=(BATCH_SIZE, N_Z), mean=0.,stddev=1.0)
     return mu + K.exp(log_sigma / 2) * eps
 
