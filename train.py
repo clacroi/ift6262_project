@@ -14,9 +14,9 @@ PROJ_PATH = '/home/ec2-user/project'
 BATCH_SIZE = 40
 NB_EPOCH = 50
 NB_SAMPLES_PER_EPOCH = 82600
-NB_VAL_SAMPLES = 1000
+NB_VAL_SAMPLES = 40400
 STEPS_PER_EPOCH = 2065
-VALIDATION_STEPS = 25
+VALIDATION_STEPS = 1010
 FIT_STYLE = "gen"
 
 
@@ -110,10 +110,12 @@ if __name__ == "__main__":
     print("Fitting model...")
 
     generator_args = {'path': train_path, 'fn_list': train_fn}
+    val_gen_args = {'path': val_path, 'fn_list': val_fn}
     vae_train = evaluate_model(vae, "gen",
-                               BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
+                                BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
                                 x_val=x_val, y_val=y_val,
-                                samples_generator=generate_samples_v15, generator_args=generator_args)
+                                samples_generator=generate_samples_v15, generator_args=generator_args,
+                                val_gen=generate_samples_v15, val_gen_args=val_gen_args, validation_steps=None)
 
     vae.save_weights('./Results/Models_v0/' + model_name + '.h5')
     print(vae_train.history)
