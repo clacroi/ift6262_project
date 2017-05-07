@@ -149,14 +149,14 @@ def model_vae_10(batch_size, original_dim):
 
         # merged branch
         dec_m_zp1 = m_zp1(dec_z_conv1)
-        dec_m_mask1 = m_mask1(dec_b_conv3)
+        dec_m_mask1 = m_mask1(dec_b_mp3)
         dec_m_add1 = layers.add([dec_m_zp1, dec_m_mask1])
         dec_m_conv1 = m_conv1(dec_m_add1)
         dec_m_up1 = m_up1(dec_m_conv1)
         dec_m_conv2 = m_conv2(dec_m_up1)
 
         dec_m_zp2 = m_zp2(dec_z_conv2)
-        dec_m_mask2 = m_mask2(dec_b_conv2)
+        dec_m_mask2 = m_mask2(dec_b_mp2)
         dec_m_add2 = layers.add([dec_m_zp2, dec_m_mask2])
         dec_m_conc1 = layers.concatenate([dec_m_add2, dec_m_conv2], axis=1)
         dec_m_conv3 = m_conv3(dec_m_conc1)
@@ -164,7 +164,7 @@ def model_vae_10(batch_size, original_dim):
         dec_m_conv4 = m_conv4(dec_m_up2)
 
         dec_m_zp3 = m_zp3(dec_z_conv3)
-        dec_m_mask3 = m_mask3(dec_b_conv1)
+        dec_m_mask3 = m_mask3(dec_b_mp1)
         dec_m_add3 = layers.add([dec_m_zp3, dec_m_mask3])
         dec_m_conc2 = layers.concatenate([dec_m_add3, dec_m_conv4], axis=1)
         dec_m_conv5 = m_conv5(dec_m_conc2)
