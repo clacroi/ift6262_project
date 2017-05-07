@@ -11,12 +11,12 @@ from preproc import *
 from generators import *
 
 PROJ_PATH = '/home/ec2-user/project'
-BATCH_SIZE = 200
+BATCH_SIZE = 10
 NB_EPOCH = 50
 NB_SAMPLES_PER_EPOCH = 82600
 NB_VAL_SAMPLES = 1000
-STEPS_PER_EPOCH = 413
-VALIDATION_STEPS = 5
+STEPS_PER_EPOCH = 8260
+VALIDATION_STEPS = 100
 FIT_STYLE = "gen"
 
 
@@ -52,7 +52,6 @@ def evaluate_model(model, fit_style,
 
         # No validation data generator
         if val_gen == None:
-            print("ok")
             model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
                             steps_per_epoch=steps_per_epoch,
                             nb_epoch=nb_epoch,
