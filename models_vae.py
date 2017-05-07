@@ -83,7 +83,7 @@ def model_vae_10(batch_size, original_dim):
     #dec2_3
 
     # Merged layers
-    m_zp1 = ZeroPadding2D(padding=1, data_format='channels_first')
+    m_zp1 = ZeroPadding2D(padding=2, data_format='channels_first')
     m_mask1 = Lambda(Zero8CenterPadding, output_shape=(256, 8, 8))
     #m_add1 = layers.add([dec1, m_mask1])
     m_conv1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')
@@ -91,7 +91,7 @@ def model_vae_10(batch_size, original_dim):
     m_conv2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')
     # 128*16*16
 
-    m_zp2 = ZeroPadding2D(padding=6, data_format='channels_first')
+    m_zp2 = ZeroPadding2D(padding=4, data_format='channels_first')
     m_mask2 = Lambda(Zero16CenterPadding, output_shape=(128, 16, 16))
     #m_add2 = layers.add([dec2, m_mask2])
     #m_conc1 = layers.concatenate([dec1, dec2], axis=1)
