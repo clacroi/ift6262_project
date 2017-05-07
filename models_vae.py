@@ -12,7 +12,7 @@ from custom_layers import *
 
 from keras import backend as K
 
-BATCH_SIZE = 40
+BATCH_SIZE = 100
 N_Z = 512
 
 def model_vae_10(batch_size, original_dim):
@@ -21,22 +21,22 @@ def model_vae_10(batch_size, original_dim):
     im = Input(shape=(3, 64, 64), name='full image')
     cond = Lambda(Zero64CenterPadding, output_shape=(3, 64, 64))(im)
 
-    encoder = Conv2D(32, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(im)
+    encoder = Conv2D(32, 3, activation='tanh', padding='same', input_shape=(3, 64, 64), data_format='channels_first')(im)
     encoder = BatchNormalization(axis=1)(encoder)
 
-    encoder = Conv2D(64, 3, activation='relu', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(encoder)
-    encoder = BatchNormalization(axis=1)(encoder)
-    encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
-
-    encoder = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(encoder)
+    encoder = Conv2D(64, 3, activation='tanh', padding='same', input_shape=(32, 64, 64), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(encoder)
+    encoder = Conv2D(128, 3, activation='tanh', padding='same', input_shape=(64, 32, 32), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
 
-    encoder = Conv2D(512, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(encoder)
+    encoder = Conv2D(256, 3, activation='tanh', padding='same', input_shape=(128, 16, 16), data_format='channels_first')(encoder)
+    encoder = BatchNormalization(axis=1)(encoder)
+    encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
+
+    encoder = Conv2D(512, 3, activation='tanh', padding='same', input_shape=(256, 8, 8), data_format='channels_first')(encoder)
     encoder = BatchNormalization(axis=1)(encoder)
     encoder = MaxPool2D((2, 2), padding='same', data_format='channels_first')(encoder)
     encoder = Cropping2D(cropping=1, data_format='channels_first')(encoder)
@@ -51,33 +51,33 @@ def model_vae_10(batch_size, original_dim):
 
     # Decoder layers (P(c|z,b))
     # z branch
-    z_d1 = Dense(2048)
+    z_d1 = Dense(2048, activation='elu')
     z_resh1 = Reshape((512, 2, 2))
     z_up1 = UpSampling2D((2, 2), data_format='channels_first')
-    z_conv1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(512, 4, 4), data_format='channels_first')
+    z_conv1 = Conv2D(256, 3, activation='tanh', padding='same', input_shape=(512, 4, 4), data_format='channels_first')
     # 256*4*4
 
     z_up2 = UpSampling2D((2, 2), data_format='channels_first')
-    z_conv2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')
+    z_conv2 = Conv2D(128, 3, activation='tanh', padding='same', input_shape=(256, 8, 8), data_format='channels_first')
     # 128*8*8
 
     z_up3 = UpSampling2D((2, 2), data_format='channels_first')
-    z_conv3 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')
+    z_conv3 = Conv2D(64, 3, activation='tanh', padding='same', input_shape=(128, 16, 16), data_format='channels_first')
     #dec_z_3 = UpSampling2D((2, 2), data_format='channels_first')(dec_z_3)
     # 64*16*16
 
     # Conditional border branch
-    b_conv1 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(3, 64, 64), data_format='channels_first')
+    b_conv1 = Conv2D(64, 3, activation='tanh', padding='same', input_shape=(3, 64, 64), data_format='channels_first')
     b_mp1 = MaxPool2D((2, 2), padding='same', data_format='channels_first')
     # 64*32*32
     # dec2_1
 
-    b_conv2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(64, 32, 32), data_format='channels_first')
+    b_conv2 = Conv2D(128, 3, activation='tanh', padding='same', input_shape=(64, 32, 32), data_format='channels_first')
     b_mp2 = MaxPool2D((2, 2), padding='same', data_format='channels_first')
     # 128*16*16
     #dec2_2
 
-    b_conv3 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(128, 16, 16), data_format='channels_first')
+    b_conv3 = Conv2D(256, 3, activation='tanh', padding='same', input_shape=(128, 16, 16), data_format='channels_first')
     b_mp3 = MaxPool2D((2, 2), padding='same', data_format='channels_first')
     # 256*8*8
     #dec2_3
@@ -86,27 +86,27 @@ def model_vae_10(batch_size, original_dim):
     m_zp1 = ZeroPadding2D(padding=2, data_format='channels_first')
     m_mask1 = Lambda(Zero8CenterPadding, output_shape=(256, 8, 8))
     #m_add1 = layers.add([dec1, m_mask1])
-    m_conv1 = Conv2D(256, 3, activation='relu', padding='same', input_shape=(256, 8, 8), data_format='channels_first')
+    m_conv1 = Conv2D(256, 3, activation='tanh', padding='same', input_shape=(256, 8, 8), data_format='channels_first')
     m_up1 = UpSampling2D((2, 2), data_format='channels_first')
-    m_conv2 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')
+    m_conv2 = Conv2D(128, 3, activation='tanh', padding='same', input_shape=(256, 16, 16), data_format='channels_first')
     # 128*16*16
 
     m_zp2 = ZeroPadding2D(padding=4, data_format='channels_first')
     m_mask2 = Lambda(Zero16CenterPadding, output_shape=(128, 16, 16))
     #m_add2 = layers.add([dec2, m_mask2])
     #m_conc1 = layers.concatenate([dec1, dec2], axis=1)
-    m_conv3 = Conv2D(128, 3, activation='relu', padding='same', input_shape=(256, 16, 16), data_format='channels_first')
+    m_conv3 = Conv2D(128, 3, activation='tanh', padding='same', input_shape=(256, 16, 16), data_format='channels_first')
     m_up2 = UpSampling2D((2, 2), data_format='channels_first')
-    m_conv4 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')
+    m_conv4 = Conv2D(64, 3, activation='tanh', padding='same', input_shape=(128, 32, 32), data_format='channels_first')
     # 64*32*32
 
     m_zp3 = ZeroPadding2D(padding=8, data_format='channels_first')
     m_mask3 = Lambda(Zero32CenterPadding, output_shape=(64, 32, 32))
     #m_add3 = layers.add([dec3, m_mask3])
     #m_conc2 = layers.concatenate([dec2, dec3], axis=1)
-    m_conv5 = Conv2D(64, 3, activation='relu', padding='same', input_shape=(128, 32, 32), data_format='channels_first')
+    m_conv5 = Conv2D(64, 3, activation='tanh', padding='same', input_shape=(128, 32, 32), data_format='channels_first')
     m_up3 = UpSampling2D((2, 2), data_format='channels_first')
-    m_conv6 = Conv2D(32, 3, activation='relu', padding='same', input_shape=(64, 64, 64), data_format='channels_first')
+    m_conv6 = Conv2D(32, 3, activation='tanh', padding='same', input_shape=(64, 64, 64), data_format='channels_first')
     # 32*64*64
 
     m_conv7 = Conv2D(3, 3, activation='sigmoid', padding='same', input_shape=(32, 64, 64), data_format='channels_first')
