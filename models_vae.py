@@ -124,7 +124,7 @@ def model_vae_10(batch_size, original_dim):
         # D_KL(Q(z|X,y) || P(z|X)); calculate in closed form as both dist. are Gaussian
         kl = 0.5 * K.sum(K.exp(enc_s) + enc_m**2 - 1. - enc_s, axis=-1)
 
-        return K.mean(recon + kl)
+        return K.mean(recon) + kl
 
     model = Model(inputs=im, outputs=decoder_outputs)
     model.compile(optimizer='adam', loss=vae_loss)
