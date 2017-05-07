@@ -38,8 +38,7 @@ def load_data(path, filenames, nb_images=None):
     return np.array(images_list)
 
 
-def evaluate_model(model, fit_style,
-                   batch_size, nb_epoch,
+def evaluate_model(model, fit_style, batch_size, nb_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
                    samples_generator=None, generator_args=None, train_steps=None,
                    val_gen=None, val_gen_args=None, validation_steps=None):
@@ -111,8 +110,7 @@ if __name__ == "__main__":
 
     generator_args = {'path': train_path, 'fn_list': train_fn}
     val_gen_args = {'path': val_path, 'fn_list': val_fn}
-    vae_train = evaluate_model(vae, "gen",
-                                BATCH_SIZE, NB_EPOCH,
+    vae_train = evaluate_model(vae, "gen", BATCH_SIZE, NB_EPOCH,
                                 x_val=x_val, y_val=y_val,
                                 samples_generator=generate_samples_v15, generator_args=generator_args, train_steps = STEPS_PER_EPOCH,
                                 val_gen=generate_samples_v15, val_gen_args=val_gen_args, validation_steps=VALIDATION_STEPS)
