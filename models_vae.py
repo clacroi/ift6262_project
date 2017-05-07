@@ -127,10 +127,10 @@ def model_vae_10(batch_size, original_dim):
 
         return recon + kl
 
-    def get_decoder_output(z, cond):
+    def get_decoder_output(code, cond):
 
         # z branch
-        dec_z_d1 = z_d1(z)
+        dec_z_d1 = z_d1(code)
         dec_z_resh1 = z_resh1(dec_z_d1)
         dec_z_up1 = z_up1(dec_z_resh1)
         dec_z_conv1 = z_conv1(dec_z_up1)
@@ -182,9 +182,10 @@ def model_vae_10(batch_size, original_dim):
     vae.compile(optimizer='adam', loss=vae_loss)
 
     # Construct generator model
-    decoder_input = Input(shape=(512,), name='decoder_input')
-    _decoded_mean_center = get_decoder_output(decoder_input, cond)
-    generator = Model(inputs=[decoder_input, cond], outputs=_decoded_mean_center)
+    decoder_input_code = Input(shape=(512,), name='decoder_input_code')
+    decoder_input_cond = Input(shape=(512,), name='decoder_input_cond')
+    _decoded_mean_center = get_decoder_output(decoder_input_code, decoder_input_cond)
+    generator = Model(inputs=[decoder_input_code, decoder_input_cond], outputs=_decoded_mean_center)
 
     # Construct encoder model
     encoder = Model(inputs=im, outputs=enc_m)
