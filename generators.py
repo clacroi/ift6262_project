@@ -49,8 +49,9 @@ def generate_samples_v10(samples_per_epoch, batch_size, path, fn_list):
 
             yield (batch_X, batch_Y)
 
-def generate_samples_v15(samples_per_epoch, batch_size, path, fn_list):
+def generate_samples_v15(steps_per_epoch, batch_size, path, fn_list):
 
+    samples_per_epoch = batch_size * steps_per_epoch
     while 1:
         for i in range(0, samples_per_epoch, batch_size):
             batch_images = []

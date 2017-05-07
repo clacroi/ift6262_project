@@ -39,9 +39,9 @@ def load_data(path, filenames, nb_images=None):
 
 
 def evaluate_model(model, fit_style,
-                   batch_size, nb_epoch, steps_per_epoch, samples_per_epoch,
+                   batch_size, nb_epoch,
                    x_train=None, x_val=None, y_train=None, y_val=None,
-                   samples_generator=None, generator_args=None,
+                   samples_generator=None, generator_args=None, train_steps=None,
                    val_gen=None, val_gen_args=None, validation_steps=None):
 
     train_history = History()
@@ -52,8 +52,8 @@ def evaluate_model(model, fit_style,
 
         # No validation data generator
         if val_gen == None:
-            model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
-                            steps_per_epoch=steps_per_epoch,
+            model.fit_generator(samples_generator(train_steps, batch_size, **generator_args),
+                            steps_per_epoch=train_steps,
                             nb_epoch=nb_epoch,
                             validation_data=(x_val, y_val),
                             verbose=1,
@@ -61,10 +61,10 @@ def evaluate_model(model, fit_style,
 
         # Validation data generator passed in arg
         else:
-            model.fit_generator(samples_generator(samples_per_epoch, batch_size, **generator_args),
-                                steps_per_epoch=steps_per_epoch,
+            model.fit_generator(samples_generator(train_steps, batch_size, **generator_args),
+                                steps_per_epoch=train_steps,
                                 nb_epoch=nb_epoch,
-                                validation_data=val_gen(**val_gen_args),
+                                validation_data=val_gen(validation_steps, batch_size, **val_gen_args),
                                 validation_steps=validation_steps,
                                 verbose=1,
                                 callbacks=[train_history, early_stopping])
@@ -112,10 +112,10 @@ if __name__ == "__main__":
     generator_args = {'path': train_path, 'fn_list': train_fn}
     val_gen_args = {'path': val_path, 'fn_list': val_fn}
     vae_train = evaluate_model(vae, "gen",
-                                BATCH_SIZE, NB_EPOCH, STEPS_PER_EPOCH, NB_SAMPLES_PER_EPOCH,
+                                BATCH_SIZE, NB_EPOCH,
                                 x_val=x_val, y_val=y_val,
-                                samples_generator=generate_samples_v15, generator_args=generator_args,
-                                val_gen=generate_samples_v15, val_gen_args=val_gen_args, validation_steps=None)
+                                samples_generator=generate_samples_v15, generator_args=generator_args, train_steps = STEPS_PER_EPOCH,
+                                val_gen=generate_samples_v15, val_gen_args=val_gen_args, validation_steps=VALIDATION_STEPS)
 
     vae.save_weights('./Results/Models_v0/' + model_name + '.h5')
     print(vae_train.history)
