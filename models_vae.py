@@ -13,7 +13,7 @@ from custom_layers import *
 
 from keras import backend as K
 
-BATCH_SIZE = 10
+BATCH_SIZE = 40
 N_Z = 512
 
 def model_vae_10(batch_size, original_dim):
