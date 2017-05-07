@@ -122,12 +122,12 @@ def model_vae_10(batch_size, original_dim):
         """ Calculate loss = reconstruction loss + KL loss for each data in minibatch """
 
         # E[log P(X|z,y)]
-        recon = original_dim * mean_squared_error(y_true, y_pred)
+        recon =  mean_squared_error(y_true, y_pred)
 
         # D_KL(Q(z|X,y) || P(z|X)); calculate in closed form as both dist. are Gaussian
         kl = 0.5 * K.sum(K.exp(enc_s) + enc_m**2 - 1. - enc_s, axis=-1)
 
-        return K.mean(recon) + kl
+        return recon + kl
 
     model = Model(inputs=im, outputs=decoder_outputs)
     model.compile(optimizer='adam', loss=vae_loss)

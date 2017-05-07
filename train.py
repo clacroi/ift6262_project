@@ -11,7 +11,7 @@ from preproc import *
 from generators import *
 
 PROJ_PATH = '/home/ec2-user/project'
-BATCH_SIZE = 10
+BATCH_SIZE = 40
 NB_EPOCH = 50
 NB_SAMPLES_PER_EPOCH = 82600
 NB_VAL_SAMPLES = 1000
