@@ -183,7 +183,7 @@ def model_vae_10(batch_size, original_dim):
 
     # Construct generator model
     decoder_input_code = Input(shape=(512,), name='decoder_input_code')
-    decoder_input_cond = Input(shape=(512,), name='decoder_input_cond')
+    decoder_input_cond = Input(shape=(3, 64, 64), name='decoder_input_cond')
     _decoded_mean_center = get_decoder_output(decoder_input_code, decoder_input_cond)
     generator = Model(inputs=[decoder_input_code, decoder_input_cond], outputs=_decoded_mean_center)
 
