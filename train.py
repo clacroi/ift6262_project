@@ -115,7 +115,11 @@ if __name__ == "__main__":
                                 samples_generator=generate_samples_v15, generator_args=generator_args, train_steps = STEPS_PER_EPOCH,
                                 val_gen=generate_samples_v15, val_gen_args=val_gen_args, validation_steps=VALIDATION_STEPS)
 
-    vae.save_weights('./Results/Models_v0/' + model_name + '.h5')
+    vae.save_weights('./Results/Models_vae/' + model_name + '.h5')
+    generator.save_weights('./Results/Models_vae/generator_' + model_name + '.h5')
+    encoder.save_weights('./Results/Models_vae/encoder_' + model_name + '.h5')
+
     print(vae_train.history)
-    with open('./Results/Models_v0/' + model_name + '_trainHistory.pkl', 'wb') as output:
+
+    with open('./Results/Models_vae/' + model_name + '_trainHistory.pkl', 'wb') as output:
         pickle.dump(vae_train.history, output, pickle.HIGHEST_PROTOCOL)
