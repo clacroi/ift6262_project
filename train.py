@@ -12,7 +12,7 @@ from generators import *
 
 PROJ_PATH = '/home/ec2-user/project'
 BATCH_SIZE = 100
-NB_EPOCH = 50
+NB_EPOCH = 12
 NB_SAMPLES_PER_EPOCH = 82600
 NB_VAL_SAMPLES = 40400
 STEPS_PER_EPOCH = 826
